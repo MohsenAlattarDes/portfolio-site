@@ -2,10 +2,13 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import AnimatedTitle from "@/components/AnimatedTitle";
 import OceanWave from "@/components/OceanWave";
+import MobileFloatWords from "@/components/MobileFloatWords";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full">
+    <div className="relative flex flex-col flex-1 min-h-0 w-full">
+      <MobileFloatWords />
+
       {/* Hero — desktop / iPad landscape only (>= lg). ocean_wave sketch, 1900×704 frame. */}
       <OceanWave />
 

@@ -740,6 +740,19 @@ body.site-loading {
   color: var(--fg);
 }
 
+.work-case-link {
+  color: var(--red);
+  text-decoration: underline;
+  text-decoration-color: var(--red);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: opacity 200ms ease;
+}
+
+.work-case-link:hover {
+  opacity: 0.72;
+}
+
 .work-case-media {
   display: flex;
   flex-direction: column;

@@ -18,7 +18,7 @@ const TITLES = [
   "UX/UI Designer",
   "Creative Coder",
   "Design Strategist",
-  "Superman",
+  "Batman",
   "Brand Strategist",
   "Pizza Chef",
   "Design Researcher",

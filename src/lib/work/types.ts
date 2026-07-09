@@ -17,8 +17,17 @@ export type ProjectMedia = {
   captionSpacing?: string;
 };
 
+export type ProjectCaseStudyLink = {
+  text: string;
+  href: string;
+};
+
+export type ProjectCaseStudyParagraph =
+  | string
+  | Array<string | ProjectCaseStudyLink>;
+
 export type ProjectCaseStudyBlock = {
-  paragraphs: string[];
+  paragraphs: ProjectCaseStudyParagraph[];
   media: ProjectMedia[];
   preserveMediaColumn?: boolean;
 };
@@ -34,7 +43,7 @@ export type ProjectCaseStudy = {
   hero?: ProjectMedia;
   intro: {
     heading: string;
-    paragraphs: string[];
+    paragraphs: ProjectCaseStudyParagraph[];
     media: ProjectMedia[];
   };
   sections: ProjectCaseStudySection[];

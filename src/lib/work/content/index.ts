@@ -1,9 +1,11 @@
+import { anoraCaseStudy } from "@/lib/work/content/anora";
 import { jujuSodaCaseStudy } from "@/lib/work/content/juju-soda";
 import { losAngelesGothicCaseStudy } from "@/lib/work/content/los-angeles-gothic";
 import { microverseCaseStudy } from "@/lib/work/content/microverse";
 import type { ProjectCaseStudy } from "@/lib/work/types";
 
 const CASE_STUDIES: Record<string, ProjectCaseStudy> = {
+  anora: anoraCaseStudy,
   "los-angeles-gothic": losAngelesGothicCaseStudy,
   "juju-soda": jujuSodaCaseStudy,
   microverse: microverseCaseStudy,

@@ -1,0 +1,18 @@
+export const FLOAT_PHRASES = [
+  "hire mohsen",
+  "open to work",
+  "need a logo?",
+  "kerning matters",
+  "type is life",
+  "send a brief",
+  "branding emergency",
+  "ctrl+z my soul",
+  "pixel perfect-ish",
+  "i love glyphs",
+  "arabic type too",
+  "trust the process",
+  "will design for coffee",
+  "not for exposure",
+  "portfolio go brr",
+  "lowercase screaming",
+] as const;

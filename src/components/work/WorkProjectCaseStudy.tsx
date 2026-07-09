@@ -6,6 +6,7 @@ import type { WorkProject } from "@/lib/work/projects";
 import type {
   ProjectCaseStudy,
   ProjectCaseStudyBlock,
+  ProjectCaseStudyParagraph,
   ProjectCaseStudySection,
   ProjectMedia,
 } from "@/lib/work/types";
@@ -176,6 +177,26 @@ function CaseStudyMedia({ item }: { item: ProjectMedia }) {
   );
 }
 
+function CaseStudyParagraph({ paragraph }: { paragraph: ProjectCaseStudyParagraph }) {
+  if (typeof paragraph === "string") return paragraph;
+
+  return paragraph.map((part, index) =>
+    typeof part === "string" ? (
+      <span key={index}>{part}</span>
+    ) : (
+      <a
+        key={index}
+        href={part.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="work-case-link"
+      >
+        {part.text}
+      </a>
+    ),
+  );
+}
+
 function CaseStudyBlock({
   heading,
   paragraphs,
@@ -184,7 +205,7 @@ function CaseStudyBlock({
   subBlock = false,
 }: {
   heading?: string;
-  paragraphs: string[];
+  paragraphs: ProjectCaseStudyParagraph[];
   media: ProjectMedia[];
   preserveMediaColumn?: boolean;
   subBlock?: boolean;
@@ -204,7 +225,9 @@ function CaseStudyBlock({
         {paragraphs.length > 0 ? (
           <div className="work-case-body" style={{ fontFamily: secondaryFont }}>
             {paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+              <p key={JSON.stringify(paragraph).slice(0, 48)}>
+                <CaseStudyParagraph paragraph={paragraph} />
+              </p>
             ))}
           </div>
         ) : null}

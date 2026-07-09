@@ -20,7 +20,7 @@ export default function Footer() {
       />
       <div
         data-footer-content
-        className="flex items-center justify-center lg:justify-start gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-3 sm:px-4 flex-wrap"
+        className="flex flex-col items-center gap-2 px-3 sm:px-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-start lg:gap-8"
         style={{ paddingTop: "12px", paddingBottom: "12px" }}
       >
         {/* Stamp logo + brand — hidden on phone/tablet-portrait, where the big circle logo above takes its place */}
@@ -50,45 +50,47 @@ export default function Footer() {
           </span>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright — full-width single line on phone */}
         <p
-          className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[11px] xl:text-[12px]"
+          className="w-full text-center whitespace-nowrap text-[8px] sm:text-[9px] md:text-[10px] lg:w-auto lg:text-left lg:text-[11px] xl:text-[12px] lg:whitespace-normal"
           style={{
             fontFamily: "var(--font-secondary)",
             color: "var(--fg-faint)",
-            letterSpacing: "0.06em",
+            letterSpacing: "0.04em",
           }}
         >
           2026 All rights reserved. Designed and developed by Mohsen Alattar.
         </p>
 
-        {/* Social links */}
-        <div className="selection-invert flex items-center gap-2 sm:gap-3 md:gap-4">
-          {[
-            { label: "INSTAGRAM", href: "https://www.instagram.com" },
-            { label: "LINKEDIN", href: "https://www.linkedin.com" },
-          ].map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[11px] xl:text-[12px]"
-              style={{
-                fontFamily: "var(--font-secondary)",
-                fontWeight: "normal",
-                letterSpacing: "0.12em",
-                color: "var(--red)",
-                textTransform: "uppercase",
-                textDecoration: "underline",
-              }}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
+        {/* Social + times — second row on phone */}
+        <div className="flex w-full items-center justify-center gap-2 sm:gap-3 md:gap-4 flex-wrap lg:w-auto lg:justify-start">
+          <div className="selection-invert flex items-center gap-2 sm:gap-3 md:gap-4">
+            {[
+              { label: "INSTAGRAM", href: "https://www.instagram.com" },
+              { label: "LINKEDIN", href: "https://www.linkedin.com" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[11px] xl:text-[12px]"
+                style={{
+                  fontFamily: "var(--font-secondary)",
+                  fontWeight: "normal",
+                  letterSpacing: "0.12em",
+                  color: "var(--red)",
+                  textTransform: "uppercase",
+                  textDecoration: "underline",
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
 
-        <FooterTimes />
+          <FooterTimes />
+        </div>
       </div>
     </footer>
   );
