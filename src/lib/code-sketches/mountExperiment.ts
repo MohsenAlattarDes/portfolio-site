@@ -51,5 +51,7 @@ export function mountExperiment(
     destroyed = true;
     resizeObserver.disconnect();
     p5Instance?.remove();
+    delete (container as HTMLElement & { __caseStudyRegenerate?: () => void })
+      .__caseStudyRegenerate;
   };
 }

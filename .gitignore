@@ -39,6 +39,20 @@ yarn-error.log*
 # netlify local state
 .netlify
 
+# generated stop-motion frames
+/scripts/anora-stopmotion/frames/
+/scripts/anora-stopmotion/debug/
+/scripts/__pycache__/
+
+# oversized / unused source masters (GitHub 100MB limit)
+/public/work/anora/anora_comp_3.mov
+/public/work/anora/anora_comp_1.mp4
+/public/work/anora/anora_comp_2.mp4
+/public/work/anora/anora_comp_3.mp4
+/public/work/anora/anora_comp_3-alpha.mp4
+/public/work/anora/specimen-spreads-dark.jpg
+/public/work/anora/specimen-spreads-light.jpg
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

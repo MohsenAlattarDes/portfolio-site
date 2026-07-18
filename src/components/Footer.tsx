@@ -66,8 +66,7 @@ export default function Footer() {
         <div className="flex w-full items-center justify-center gap-2 sm:gap-3 md:gap-4 flex-wrap lg:w-auto lg:justify-start">
           <div className="selection-invert flex items-center gap-2 sm:gap-3 md:gap-4">
             {[
-              { label: "INSTAGRAM", href: "https://www.instagram.com" },
-              { label: "LINKEDIN", href: "https://www.linkedin.com" },
+              { label: "LINKEDIN", href: "https://www.linkedin.com/in/abdulmohsen-alattar" },
             ].map(({ label, href }) => (
               <Link
                 key={label}

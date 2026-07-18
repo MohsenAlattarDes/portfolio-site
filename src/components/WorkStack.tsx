@@ -13,9 +13,15 @@ const displayFont =
   "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
 
 const DEFAULT_SLUG = WORK_PROJECTS[0].slug;
+const AUTO_PREVIEW_PROJECTS = WORK_PROJECTS.filter((project) =>
+  hasProjectThumbnail(project.thumbnail),
+);
+const AUTO_PREVIEW_INTERVAL = 3200;
 
 const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
 const DURATION = "750ms";
+const PREVIEW_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const PREVIEW_DURATION = "1400ms";
 const NAME_SCALE_EASE = "cubic-bezier(0.33, 1, 0.68, 1)";
 const NAME_SCALE_DURATION = "1000ms";
 const BLUR_BLEED = 12;
@@ -80,11 +86,15 @@ function SplitPreview({ active }: { active: string }) {
         return (
           <div
             key={project.slug}
-            className="absolute inset-0 transition-opacity"
+            className="absolute inset-0"
             style={{
               opacity: isVisible ? 1 : 0,
-              transitionDuration: DURATION,
-              transitionTimingFunction: EASE,
+              transform: isVisible ? "scale(1)" : "scale(1.018)",
+              transitionProperty: "opacity, transform",
+              transitionDuration: PREVIEW_DURATION,
+              transitionTimingFunction: PREVIEW_EASE,
+              willChange: "opacity, transform",
+              zIndex: isVisible ? 2 : 1,
               pointerEvents: "none",
             }}
           >
@@ -92,7 +102,8 @@ function SplitPreview({ active }: { active: string }) {
               project={project}
               alt={title}
               sizes="560px"
-              priority={project.slug === DEFAULT_SLUG}
+              priority={project.slug === AUTO_PREVIEW_PROJECTS[0]?.slug}
+              playing={isVisible}
             />
           </div>
         );
@@ -103,9 +114,18 @@ function SplitPreview({ active }: { active: string }) {
 
 export default function WorkStack() {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [autoPreviewIndex, setAutoPreviewIndex] = useState(0);
   const [mobileActiveSlug, setMobileActiveSlug] = useState(DEFAULT_SLUG);
   const mobileItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-  const previewSlug = hovered ?? DEFAULT_SLUG;
+  const hoveredProject = hovered
+    ? WORK_PROJECTS.find((project) => project.slug === hovered)
+    : undefined;
+  const hoveredHasThumbnail = Boolean(
+    hoveredProject && hasProjectThumbnail(hoveredProject.thumbnail),
+  );
+  const autoPreviewSlug =
+    AUTO_PREVIEW_PROJECTS[autoPreviewIndex]?.slug ?? DEFAULT_SLUG;
+  const previewSlug = hoveredHasThumbnail ? hovered! : autoPreviewSlug;
 
   const syncLayout = useCallback(() => {
     syncFooterOffset();
@@ -132,6 +152,19 @@ export default function WorkStack() {
       footerObserver?.disconnect();
     };
   }, [syncLayout]);
+
+  useEffect(() => {
+    if (hoveredHasThumbnail || AUTO_PREVIEW_PROJECTS.length < 2) return;
+
+    const interval = window.setInterval(() => {
+      if (document.hidden) return;
+      setAutoPreviewIndex(
+        (current) => (current + 1) % AUTO_PREVIEW_PROJECTS.length,
+      );
+    }, AUTO_PREVIEW_INTERVAL);
+
+    return () => window.clearInterval(interval);
+  }, [hoveredHasThumbnail]);
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MQ);

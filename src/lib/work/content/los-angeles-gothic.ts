@@ -25,16 +25,7 @@ export const losAngelesGothicCaseStudy: ProjectCaseStudy = {
     paragraphs: [
       "This project explores how a typographic voice can reflect both history and place. Los Angeles Gothic is a revival that reinterprets the American Gothic type tradition through a modern lens. The goal was to create a type system that balances the honesty and structure of early 20th-century grotesques with the diversity and rhythm of contemporary Los Angeles.",
     ],
-    media: [
-      {
-        src: "/work/los-angeles-gothic/lag_process.gif",
-        alt: "Los Angeles Gothic font design process book spreads",
-        caption: "Spreads from the process book binder.",
-        aspectRatio: "1200 / 996",
-        bare: true,
-        paperShadow: true,
-      },
-    ],
+    media: [],
   },
   sections: [
     {
@@ -45,8 +36,18 @@ export const losAngelesGothicCaseStudy: ProjectCaseStudy = {
           paragraphs: [
             "The process book documents the full development of Los Angeles Gothic, from research and early sketches to digital refinement and testing. Franklin Gothic served as my main reference, guiding the foundation of the design while I reinterpreted its proportions and tone to create a new visual language.",
           ],
-          media: [],
-          preserveMediaColumn: true,
+          media: [
+            {
+              src: "",
+              alt: "Los Angeles Gothic process book scans composited as a stop-motion stack",
+              caption: "Process book scans, composited as stop-motion stack.",
+              aspectRatio: "1350 / 1750",
+              bare: true,
+              kind: "code",
+              codeSketch: "lag-process-stack",
+              spacingTop: "-90px",
+            },
+          ],
         },
       ],
     },

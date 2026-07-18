@@ -6,7 +6,10 @@ export type WorkProject = {
   category: string;
   /** Image, GIF, or video path under /public */
   thumbnail: string;
+  thumbnailPoster?: string;
   thumbnailVideoSources?: { src: string; type: string }[];
+  thumbnailTransparent?: boolean;
+  thumbnailMotion?: "pan-x";
 };
 
 export function hasProjectThumbnail(thumbnail: string) {
@@ -25,10 +28,31 @@ export const WORK_PROJECTS: WorkProject[] = [
     thumbnail: "/work/placeholder.svg",
   },
   {
+    slug: "kuwaits-cake-picnic",
+    lines: ["KUWAIT'S CAKE", "PICNIC"],
+    category: "Branding + Creative coding",
+    thumbnail: "/work/kuwaits-cake-picnic/hero.jpg",
+    thumbnailMotion: "pan-x",
+  },
+  {
+    slug: "anora",
+    lines: ["ANORA"],
+    category: "Font Design + Specimen Design",
+    thumbnail: "/work/anora/wall-art-video.mp4",
+    thumbnailPoster: "/work/anora/wall-art-video-poster.jpg",
+    thumbnailVideoSources: [
+      {
+        src: "/work/anora/wall-art-video.mp4",
+        type: "video/mp4",
+      },
+    ],
+  },
+  {
     slug: "los-angeles-gothic",
     lines: ["LOS ANGELES", "GOTHIC"],
     category: "Font + Poster Design",
     thumbnail: "/work/los-angeles-gothic/lag-hero.mp4",
+    thumbnailPoster: "/work/los-angeles-gothic/lag-hero-poster.jpg",
     thumbnailVideoSources: [
       {
         src: "/work/los-angeles-gothic/lag-hero.mp4",
@@ -41,22 +65,11 @@ export const WORK_PROJECTS: WorkProject[] = [
     ],
   },
   {
-    slug: "anora",
-    lines: ["ANORA"],
-    category: "Font Design + Specimen Design",
-    thumbnail: "/work/placeholder.svg",
-  },
-  {
     slug: "uncommon-thread",
     lines: ["UNCOMMON", "THREAD"],
     category: "Publication + Poster Design + Design Research",
-    thumbnail: "/work/placeholder.svg",
-  },
-  {
-    slug: "kuwaits-cake-picnic",
-    lines: ["KUWAIT'S CAKE", "PICNIC"],
-    category: "Branding + Creative coding",
-    thumbnail: "/work/placeholder.svg",
+    thumbnail: "/work/uncommon-thread/research-casablanca-school.jpg",
+    thumbnailMotion: "pan-x",
   },
   {
     slug: "juju-soda",
@@ -69,6 +82,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     lines: ["MICROVERSE"],
     category: "3D Motion",
     thumbnail: "/work/microverse/microverse-hero-clip.mp4",
+    thumbnailPoster: "/work/microverse/microverse-hero-poster.jpg",
     thumbnailVideoSources: [
       {
         src: "/work/microverse/microverse-hero-clip.mp4",
@@ -84,4 +98,10 @@ export const WORK_PROJECTS: WorkProject[] = [
 
 export function getWorkProject(slug: string) {
   return WORK_PROJECTS.find((project) => project.slug === slug);
+}
+
+export function getNextWorkProject(slug: string) {
+  const index = WORK_PROJECTS.findIndex((project) => project.slug === slug);
+  if (index < 0) return undefined;
+  return WORK_PROJECTS[(index + 1) % WORK_PROJECTS.length];
 }

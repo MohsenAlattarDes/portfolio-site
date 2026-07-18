@@ -3,10 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
+import WorkCaseNextProject from "@/components/work/WorkCaseNextProject";
 import WorkProjectCaseStudy from "@/components/work/WorkProjectCaseStudy";
 import WorkTitleText from "@/components/WorkTitleText";
 import { getProjectCaseStudy } from "@/lib/work/content";
-import { getWorkProject, WORK_PROJECTS } from "@/lib/work/projects";
+import {
+  getNextWorkProject,
+  getWorkProject,
+  WORK_PROJECTS,
+} from "@/lib/work/projects";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -31,12 +36,14 @@ export default async function WorkProjectPage({ params }: Props) {
   if (!project) notFound();
 
   const caseStudy = getProjectCaseStudy(slug);
+  const nextProject = getNextWorkProject(slug);
 
   if (caseStudy) {
     return (
       <div className="work-project-page flex w-full flex-1 flex-col">
         <section className="work-case-wrap flex-1">
           <WorkProjectCaseStudy project={project} content={caseStudy} />
+          {nextProject ? <WorkCaseNextProject project={nextProject} /> : null}
         </section>
         <Footer />
       </div>
@@ -97,6 +104,8 @@ export default async function WorkProjectPage({ params }: Props) {
             Project page coming soon.
           </p>
         </div>
+
+        {nextProject ? <WorkCaseNextProject project={nextProject} /> : null}
       </section>
       <Footer />
     </div>

@@ -6,6 +6,11 @@ import { INTRO_COMPLETE_EVENT } from "@/lib/intro";
 
 const DESKTOP_MQ = "(min-width: 62rem)";
 
+function isEnlargeTarget(target: Element | null): boolean {
+  if (!target) return false;
+  return target.closest(".work-case-media-enlarge") !== null;
+}
+
 function isClickableTarget(target: Element | null): boolean {
   if (!target) return false;
   return (
@@ -70,7 +75,11 @@ export default function RedSquareCursor() {
       const overLetterSplash =
         target?.closest("[data-letter-splash]") !== null;
       setVisible(!overLetterSplash);
-      setOverLink(!overLetterSplash && isClickableTarget(target));
+      setOverLink(
+        !overLetterSplash &&
+          isClickableTarget(target) &&
+          !isEnlargeTarget(target),
+      );
     };
     const onLeave = () => setVisible(false);
 
