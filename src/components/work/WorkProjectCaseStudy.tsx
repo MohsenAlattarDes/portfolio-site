@@ -118,6 +118,44 @@ function mediaAspectValue(item: ProjectMedia): number {
   return 1;
 }
 
+/** Relative aspect tolerance so near-identical crops can share a phone row. */
+function aspectsMatchHeight(a: number, b: number, tolerance = 0.08): boolean {
+  const mid = (a + b) / 2;
+  if (mid <= 0) return false;
+  return Math.abs(a - b) / mid <= tolerance;
+}
+
+/**
+ * Phone layout groups: only consecutive items with matching height share a row.
+ * Mismatched items, wide/motion pieces, and phoneSolo items get their own row.
+ */
+function phoneMediaGroups(items: ProjectMedia[]): ProjectMedia[][] {
+  const groups: ProjectMedia[][] = [];
+  let i = 0;
+  while (i < items.length) {
+    const current = items[i]!;
+    const next = items[i + 1];
+    const currentSolo =
+      current.phoneSolo || current.rowFit === "wide";
+    const nextSolo = Boolean(
+      next && (next.phoneSolo || next.rowFit === "wide"),
+    );
+    if (
+      next &&
+      !currentSolo &&
+      !nextSolo &&
+      aspectsMatchHeight(mediaAspectValue(current), mediaAspectValue(next))
+    ) {
+      groups.push([current, next]);
+      i += 2;
+      continue;
+    }
+    groups.push([current]);
+    i += 1;
+  }
+  return groups;
+}
+
 function CaseStudyHeroSlot({ item }: { item: ProjectMedia }) {
   const isVideo = isVideoMedia(item);
 
@@ -640,13 +678,27 @@ function CaseStudyBlock({
           <div
             className={`work-case-media-row${mediaGrid3 ? " work-case-media-row--grid-3" : ""}${!mediaGrid3 && media.length === 2 ? " work-case-media-row--pair" : ""}${!mediaGrid3 && media.length === 3 ? " work-case-media-row--triptych" : ""}${!mediaGrid3 && media.length === 4 ? " work-case-media-row--quad" : ""}${!mediaGrid3 && media.length === 5 ? " work-case-media-row--five" : ""}${mediaRowClass ? ` ${mediaRowClass}` : ""}`}
           >
-            {media.map((item) => (
-              <CaseStudyMedia
-                key={`${item.alt}-${item.caption}`}
-                item={item}
-                inRow
-              />
-            ))}
+            {phoneMediaGroups(media).map((group, groupIndex) => {
+              const groupAspect = group.reduce(
+                (sum, item) => sum + mediaAspectValue(item),
+                0,
+              );
+              return (
+                <div
+                  key={`phone-group-${groupIndex}`}
+                  className={`work-case-media-row__phone-group${group.length === 1 ? " work-case-media-row__phone-group--solo" : ""}`}
+                  style={{ ["--group-aspect" as string]: groupAspect }}
+                >
+                  {group.map((item) => (
+                    <CaseStudyMedia
+                      key={`${item.alt}-${item.caption}`}
+                      item={item}
+                      inRow
+                    />
+                  ))}
+                </div>
+              );
+            })}
           </div>
           {rowCaption ? (
             <p

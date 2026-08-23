@@ -70,6 +70,8 @@ export type ProjectMedia = {
   captionSpacing?: string;
   enlarge?: boolean;
   rowFit?: "cover" | "contain" | "natural" | "wide";
+  /** Force a full-width phone row even when a neighbor shares the same aspect. */
+  phoneSolo?: boolean;
   rowAspectRatio?: string;
   objectPosition?: string;
 };

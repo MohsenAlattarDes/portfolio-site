@@ -150,6 +150,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
+              phoneSolo: true,
             },
             {
               src: "/work/king-of-clubs/lanyard.jpg",
@@ -160,6 +161,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
+              phoneSolo: true,
             },
           ],
         },
@@ -454,6 +456,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
         {
           paragraphs: [],
           mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
               src: "/work/king-of-clubs/city-airport-screens.jpg",
@@ -464,6 +467,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
+              phoneSolo: true,
             },
             {
               src: "/work/king-of-clubs/cap-goal.jpg",
@@ -473,6 +477,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               kind: "hero-cycle",
               bare: true,
               glyphIntervalMs: 2800,
+              phoneSolo: true,
               heroSlides: [
                 {
                   src: "/work/king-of-clubs/cap-goal.jpg",
