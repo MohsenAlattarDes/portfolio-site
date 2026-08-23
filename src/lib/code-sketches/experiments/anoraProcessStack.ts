@@ -14,7 +14,6 @@ import { LAG_PROCESS_STACK } from "@/lib/work/los-angeles-gothic/processStackCon
 
 type P5 = InstanceType<typeof p5js>;
 type StackPage = Awaited<ReturnType<typeof loadImages>>[number];
-type StackFrame = Parameters<P5["image"]>[0];
 
 function isMobileViewport() {
   return typeof window !== "undefined" && window.innerWidth <= 992;
@@ -73,12 +72,6 @@ async function loadImages(
   return images;
 }
 
-function canvasContext(
-  graphics: ReturnType<P5["createGraphics"]>,
-): CanvasRenderingContext2D {
-  return graphics.drawingContext as CanvasRenderingContext2D;
-}
-
 function setHighQualitySmoothing(ctx: CanvasRenderingContext2D) {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
@@ -90,10 +83,6 @@ function resetCanvasEffects(ctx: CanvasRenderingContext2D) {
   ctx.shadowOffsetY = 0;
   ctx.shadowBlur = 0;
   ctx.shadowColor = "transparent";
-}
-
-function disposeFrames(frames: StackFrame[]) {
-  frames.length = 0;
 }
 
 function drawStackPage(
@@ -133,66 +122,16 @@ function drawStackPage(
   p.pop();
 }
 
-function buildStackFrames(
-  p: P5,
-  stack: ProcessStackDefinition,
-  pages: StackPage[],
-  lightMode: boolean,
-  renderScale: number,
-): StackFrame[] {
-  const { canvasWidth, canvasHeight, rotations, pageScale } = stack;
-  const stageWidth = canvasWidth * renderScale;
-  const stageHeight = canvasHeight * renderScale;
-  const frames: StackFrame[] = [];
-  const buffer = p.createGraphics(stageWidth, stageHeight);
-  buffer.clear();
-  setHighQualitySmoothing(canvasContext(buffer));
-
-  for (let i = 0; i < pages.length; i += 1) {
-    const page = pages[i]!;
-    const { width: drawW, height: drawH } = pageDrawSize(
-      page.width,
-      page.height,
-      pageScale * renderScale,
-    );
-    const ctx = canvasContext(buffer);
-
-    buffer.push();
-    buffer.translate(stageWidth / 2, stageHeight / 2);
-    buffer.rotate(p.radians(rotations[i] ?? 0));
-    buffer.imageMode(p.CENTER);
-    setHighQualitySmoothing(ctx);
-
-    ctx.filter = PROCESS_STACK_IMAGE_FILTER;
-    if (lightMode) {
-      ctx.shadowOffsetX = PROCESS_STACK_LIGHT_SHADOW.offsetX;
-      ctx.shadowOffsetY = PROCESS_STACK_LIGHT_SHADOW.offsetY;
-      ctx.shadowBlur = PROCESS_STACK_LIGHT_SHADOW.blur;
-      ctx.shadowColor = PROCESS_STACK_LIGHT_SHADOW.color;
-    }
-
-    buffer.image(page, 0, 0, drawW, drawH);
-    resetCanvasEffects(ctx);
-    buffer.pop();
-    frames.push(buffer.get());
-  }
-
-  buffer.remove();
-  return frames;
-}
-
 export function createProcessStack(stack: ProcessStackDefinition) {
   return (container: HTMLElement) => {
     return (p: P5) => {
       const { fps, scans } = stack;
 
-      let pages: StackPage[] = [];
-      let stackFrames: StackFrame[] = [];
+      const pages: StackPage[] = [];
       let ready = false;
       let playbackFrame = 0;
       let activeSpeed: ProcessStackSpeed = readProcessStackSpeed(container);
       let activeLightMode = isLightTheme();
-      let runtimeMode = isMobileViewport();
       let renderScale = stackRenderScale();
 
       p.setup = () => {
@@ -206,27 +145,23 @@ export function createProcessStack(stack: ProcessStackDefinition) {
         p.clear();
 
         void (async () => {
-          pages = await loadImages(
-            p,
-            scans,
-            shouldDownsampleSources(scans.length),
-          );
+          const downsample = shouldDownsampleSources(scans.length);
           activeLightMode = isLightTheme();
-          runtimeMode = isMobileViewport();
           renderScale = stackRenderScale();
-          if (!runtimeMode) {
-            stackFrames = buildStackFrames(
-              p,
-              stack,
-              pages,
-              activeLightMode,
-              renderScale,
-            );
+
+          // Show the stack as soon as the first scans arrive, then keep
+          // appending so the animation grows while the rest download.
+          for (const src of scans) {
+            const [page] = await loadImages(p, [src], downsample);
+            if (!page) continue;
+            pages.push(page);
+            if (!ready) {
+              ready = true;
+              p.loop();
+            }
           }
-          ready = true;
-          p.loop();
         })().catch(() => {
-          p.noLoop();
+          if (!ready) p.noLoop();
         });
       };
 
@@ -242,18 +177,7 @@ export function createProcessStack(stack: ProcessStackDefinition) {
         const lightMode = isLightTheme();
         if (lightMode !== activeLightMode) {
           activeLightMode = lightMode;
-          if (runtimeMode) {
-            playbackFrame = 0;
-          } else {
-            disposeFrames(stackFrames);
-            stackFrames = buildStackFrames(
-              p,
-              stack,
-              pages,
-              lightMode,
-              renderScale,
-            );
-          }
+          playbackFrame = 0;
         }
 
         const { secondsPerPage, endHoldSeconds } =
@@ -268,45 +192,23 @@ export function createProcessStack(stack: ProcessStackDefinition) {
         );
 
         p.clear();
-
-        if (runtimeMode) {
-          drawStackPage(
-            p,
-            stack,
-            pages[step]!,
-            step,
-            activeLightMode,
-            renderScale,
-          );
-        } else {
-          const { stageWidth, stageHeight } = stageSize(stack, renderScale);
-
-          p.push();
-          p.translate(p.width / 2, p.height / 2);
-          p.scale(fitStageScale(p, stageWidth, stageHeight));
-          p.imageMode(p.CENTER);
-          setHighQualitySmoothing(p.drawingContext as CanvasRenderingContext2D);
-          p.image(stackFrames[step]!, 0, 0);
-          p.pop();
-        }
+        drawStackPage(
+          p,
+          stack,
+          pages[step]!,
+          step,
+          activeLightMode,
+          renderScale,
+        );
 
         playbackFrame += 1;
       };
 
       p.windowResized = () => {
-        const nextRuntimeMode = isMobileViewport();
         const nextRenderScale = stackRenderScale();
 
-        if (
-          nextRuntimeMode !== runtimeMode ||
-          nextRenderScale !== renderScale
-        ) {
-          runtimeMode = nextRuntimeMode;
+        if (nextRenderScale !== renderScale) {
           renderScale = nextRenderScale;
-          disposeFrames(stackFrames);
-          stackFrames = runtimeMode
-            ? []
-            : buildStackFrames(p, stack, pages, activeLightMode, renderScale);
           playbackFrame = 0;
         }
 

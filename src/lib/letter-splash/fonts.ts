@@ -1,9 +1,9 @@
 import type p5js from "p5";
+import { resolveLatinFont, preloadLatinFont } from "@/lib/sketch-font";
 
 type P5 = InstanceType<typeof p5js>;
 export type HeroP5Font = object;
 
-export const LATIN_FONT = "Tahoma";
 export const ARABIC_FONT_PATHS = [
   "/fonts/Futura100ARA-Bold.woff2",
   "/fonts/Futura100ARA-Bold.otf",
@@ -79,12 +79,9 @@ export function applyGlyphFont(p: P5, char: string) {
   }
 
   p.textStyle(p.BOLD);
-  p.textFont(LATIN_FONT);
+  p.textFont(resolveLatinFont());
 }
 
 export async function preloadHeroFonts() {
-  await Promise.all([
-    document.fonts.load("700 48px Tahoma"),
-    resolveArabicFamily(),
-  ]);
+  await Promise.all([preloadLatinFont(), resolveArabicFamily()]);
 }

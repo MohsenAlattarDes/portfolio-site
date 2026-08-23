@@ -4,14 +4,24 @@ import CaseStudyCodeFigure from "@/components/work/CaseStudyCodeFigure";
 import CaseStudyCodeWindow from "@/components/work/CaseStudyCodeWindow";
 import CaseStudyGlyphCycle from "@/components/work/CaseStudyGlyphCycle";
 import CaseStudyPublicationFlipbook from "@/components/work/CaseStudyPublicationFlipbook";
+import CaseStudyScatteredStack from "@/components/work/CaseStudyScatteredStack";
+import CaseStudyCharacterCast from "@/components/work/CaseStudyCharacterCast";
+import CaseStudyInterfaceKit from "@/components/work/CaseStudyInterfaceKit";
+import CaseStudyInteractiveSvg from "@/components/work/CaseStudyInteractiveSvg";
+import CaseStudyShowMore from "@/components/work/CaseStudyShowMore";
+import CaseStudySiteEmbed from "@/components/work/CaseStudySiteEmbed";
+import CaseStudyVideoSpeed from "@/components/work/CaseStudyVideoSpeed";
 import CaseStudyResponsiveHero from "@/components/work/CaseStudyResponsiveHero";
+import CaseStudyHeroCycle from "@/components/work/CaseStudyHeroCycle";
 import CaseStudyHeroVideo from "@/components/work/CaseStudyHeroVideo";
 import CaseStudyLoopVideo from "@/components/work/CaseStudyLoopVideo";
 import CaseStudyMediaLightbox from "@/components/work/CaseStudyMediaLightbox";
 import CaseStudyThemeImage from "@/components/work/CaseStudyThemeImage";
+import ScrollReveal from "@/components/work/ScrollReveal";
 import { PLACEHOLDER_THUMBNAIL } from "@/lib/work/projects";
 import type { WorkProject } from "@/lib/work/projects";
 import type {
+  CaseStudyShowMoreContent,
   ProjectCaseStudy,
   ProjectCaseStudyBlock,
   ProjectCaseStudyParagraph,
@@ -31,7 +41,8 @@ function isCodeMedia(item: ProjectMedia) {
 function isVideoMedia(item: ProjectMedia) {
   if (item.kind === "code") return false;
   if (item.kind === "video") return true;
-  if (item.kind === "image" || item.kind === "pdf") return false;
+  if (item.kind === "image" || item.kind === "pdf" || item.kind === "hero-cycle")
+    return false;
   return /\.(mov|mp4|webm)$/i.test(item.src);
 }
 
@@ -66,8 +77,46 @@ function isFlipbookMedia(item: ProjectMedia) {
   );
 }
 
+function isScatteredStackMedia(item: ProjectMedia) {
+  return item.kind === "scattered-stack" && Boolean(item.scatterImages?.length);
+}
+
+function isCharacterCastMedia(item: ProjectMedia) {
+  return item.kind === "character-cast" && Boolean(item.castImages?.length);
+}
+
+function isHeroCycleMedia(item: ProjectMedia) {
+  return item.kind === "hero-cycle" && Boolean(item.heroSlides?.length);
+}
+
+function isSiteEmbedMedia(item: ProjectMedia) {
+  return item.kind === "site-embed" && Boolean(item.embedUrl || item.src);
+}
+
+function isInterfaceKitMedia(item: ProjectMedia) {
+  return (
+    item.kind === "interface-kit" &&
+    Boolean(item.interfaceColors?.length || item.interfaceCategories?.length)
+  );
+}
+
 const ROW_MEDIA_ASPECT = "768 / 1024";
 const CASE_STUDY_HERO_ASPECT = "3612 / 1850";
+
+/** Width/height for flex-grow in equal-height full-width rows. */
+function mediaAspectValue(item: ProjectMedia): number {
+  if (item.intrinsicSize?.width && item.intrinsicSize?.height) {
+    return item.intrinsicSize.width / item.intrinsicSize.height;
+  }
+  const raw = item.aspectRatio ?? item.rowAspectRatio;
+  if (raw) {
+    const parts = raw.split("/").map((part) => Number.parseFloat(part.trim()));
+    if (parts.length === 2 && parts[0] > 0 && parts[1] > 0) {
+      return parts[0] / parts[1];
+    }
+  }
+  return 1;
+}
 
 function CaseStudyHeroSlot({ item }: { item: ProjectMedia }) {
   const isVideo = isVideoMedia(item);
@@ -155,6 +204,53 @@ function CaseStudyMedia({
   item: ProjectMedia;
   inRow?: boolean;
 }) {
+  if (isHeroCycleMedia(item)) {
+    const ratio = item.aspectRatio ?? "2 / 3";
+    const aspect = mediaAspectValue(item);
+    return (
+      <figure
+        className="work-case-figure"
+        style={{
+          ...(inRow ? { ["--media-aspect" as string]: aspect } : {}),
+          ...(item.spacingTop ? { marginTop: item.spacingTop } : {}),
+          ...(item.maxWidth
+            ? { width: item.maxWidth, maxWidth: "100%" }
+            : {}),
+        }}
+      >
+        <div
+          className={`work-case-media-frame relative w-full overflow-hidden${item.bare ? "" : " work-grey-box"}`}
+          style={{ aspectRatio: ratio }}
+        >
+          <CaseStudyHeroCycle
+            slides={item.heroSlides!}
+            stickers={item.heroStickers}
+            overlay={item.heroOverlay}
+            backdropShape={item.heroBackdropShape}
+            intervalMs={item.glyphIntervalMs}
+            fadeMs={item.heroCycleFadeMs}
+            slideFit={item.heroCycleFit ?? "contain"}
+            syncId={item.heroCycleSyncId}
+            variant="media"
+          />
+        </div>
+        {item.caption ? (
+          <figcaption
+            className="work-case-caption"
+            style={{
+              fontFamily: secondaryFont,
+              ...(item.captionSpacing
+                ? { marginTop: item.captionSpacing }
+                : {}),
+            }}
+          >
+            {item.caption}
+          </figcaption>
+        ) : null}
+      </figure>
+    );
+  }
+
   if (isGlyphCycleMedia(item)) {
     return <CaseStudyGlyphCycle item={item} />;
   }
@@ -168,14 +264,57 @@ function CaseStudyMedia({
     );
   }
 
+  if (isScatteredStackMedia(item)) {
+    return (
+      <CaseStudyScatteredStack
+        items={item.scatterImages!}
+        caption={item.caption}
+      />
+    );
+  }
+
+  if (isCharacterCastMedia(item)) {
+    return (
+      <CaseStudyCharacterCast
+        items={item.castImages!}
+        caption={item.caption}
+      />
+    );
+  }
+
+  if (isSiteEmbedMedia(item)) {
+    return (
+      <CaseStudySiteEmbed
+        src={item.embedUrl ?? item.src}
+        displaySrc={item.embedDisplayUrl}
+        title={item.alt}
+        caption={item.caption}
+      />
+    );
+  }
+
+  if (isInterfaceKitMedia(item)) {
+    return (
+      <CaseStudyInterfaceKit
+        colors={item.interfaceColors ?? []}
+        categories={item.interfaceCategories ?? []}
+        caption={item.caption}
+      />
+    );
+  }
+
+  if (item.videoSpeedControls && isVideoMedia(item)) {
+    return <CaseStudyVideoSpeed item={item} />;
+  }
+
   if (isCodeMedia(item)) {
     return <CaseStudyCodeFigure item={item} />;
   }
 
   const rowNatural = inRow && item.rowFit === "natural";
-  const rowContain = inRow && item.rowFit === "contain";
+  const rowContain = inRow && (item.rowFit === "contain" || item.rowFit === undefined);
   const rowWide = inRow && item.rowFit === "wide";
-  const rowCover = inRow && !rowNatural && !rowContain && !rowWide;
+  const rowCover = inRow && item.rowFit === "cover";
   const useIntrinsicSize = Boolean(item.intrinsicSize) && (!inRow || rowNatural);
   const ratio = rowWide
     ? (item.aspectRatio ?? "4 / 3")
@@ -184,6 +323,7 @@ function CaseStudyMedia({
       : (item.aspectRatio ?? "4 / 3");
   const isVideo = isVideoMedia(item);
   const isPdf = isPdfMedia(item);
+  const isInteractiveSvg = item.kind === "interactive-svg";
   const styled = hasVisualTreatment(item);
   const cropStyle = cropWrapperStyle(item);
   const mediaClassName = useIntrinsicSize
@@ -254,7 +394,9 @@ function CaseStudyMedia({
       />
     );
 
-  const mediaContent = isPdf ? (
+  const mediaContent = isInteractiveSvg ? (
+    <CaseStudyInteractiveSvg alt={item.alt} className={mediaClassName} />
+  ) : isPdf ? (
     <iframe
       src={`${item.src}#toolbar=0&navpanes=0`}
       title={item.alt}
@@ -267,14 +409,17 @@ function CaseStudyMedia({
   );
 
   const figureStyle = {
-    ...(item.maxWidth ? { maxWidth: item.maxWidth, width: "100%" } : {}),
+    ...(inRow ? { ["--media-aspect" as string]: mediaAspectValue(item) } : {}),
+    ...(item.maxWidth
+      ? { width: item.maxWidth, maxWidth: "100%" }
+      : {}),
     ...(item.spacingTop ? { marginTop: item.spacingTop } : {}),
     ...(item.align === "center"
-      ? { alignSelf: "center" }
+      ? { alignSelf: "center", marginInline: "auto" }
       : item.align === "start"
         ? { alignSelf: "flex-start" }
         : item.align === "end"
-          ? { alignSelf: "flex-end" }
+          ? { alignSelf: "flex-end", marginInlineStart: "auto" }
           : {}),
   };
 
@@ -354,6 +499,7 @@ function CaseStudyParagraph({ paragraph }: { paragraph: ProjectCaseStudyParagrap
 
 function CaseStudyBlock({
   heading,
+  headingAs = "h2",
   paragraphs,
   media,
   copyMedia = [],
@@ -363,10 +509,14 @@ function CaseStudyBlock({
   preserveMediaColumn = false,
   mediaLayout = "stack",
   rowCaption,
+  mediaRowClass,
   subBlock = false,
+  solo = false,
   codeWindow,
+  more,
 }: {
   heading?: string;
+  headingAs?: "h2" | "h3";
   paragraphs: ProjectCaseStudyParagraph[];
   media: ProjectMedia[];
   copyMedia?: ProjectMedia[];
@@ -374,18 +524,25 @@ function CaseStudyBlock({
   mobileMediaBeforeCopyMedia?: boolean;
   mobileMediaBeforeCodeWindow?: boolean;
   preserveMediaColumn?: boolean;
-  mediaLayout?: "stack" | "row" | "hero" | "full";
+  mediaLayout?: "stack" | "row" | "grid-3" | "hero" | "full";
   rowCaption?: string;
+  mediaRowClass?: string;
   subBlock?: boolean;
+  solo?: boolean;
   codeWindow?: {
     title?: string;
     source: string;
   };
+  more?: CaseStudyShowMoreContent;
 }) {
   const showMediaColumn =
     media.length > 0 || afterCodeMedia.length > 0 || preserveMediaColumn;
   const mediaOnlyRow =
     mediaLayout === "row" && paragraphs.length === 0 && media.length > 0;
+  const mediaRowAfterCopy =
+    mediaLayout === "row" && paragraphs.length > 0 && media.length > 0;
+  const mediaGrid3 =
+    mediaLayout === "grid-3" && paragraphs.length === 0 && media.length > 0;
   const mediaHeroLayout =
     mediaLayout === "hero" && paragraphs.length === 0 && media.length > 0;
   const mediaFullLayout =
@@ -399,75 +556,120 @@ function CaseStudyBlock({
     detachCodeWindow && afterCodeMedia.length > 0,
   );
 
+  const headingNode = heading ? (
+    headingAs === "h3" ? (
+      <h3 className="work-case-subheading" style={{ fontFamily: displayFont }}>
+        {heading}
+      </h3>
+    ) : (
+      <h2 className="work-case-heading" style={{ fontFamily: displayFont }}>
+        {heading}
+      </h2>
+    )
+  ) : null;
+
+  const bodyNode =
+    paragraphs.length > 0 ? (
+      <div className="work-case-body" style={{ fontFamily: secondaryFont }}>
+        {paragraphs.map((paragraph) => (
+          <p key={JSON.stringify(paragraph).slice(0, 48)}>
+            <CaseStudyParagraph paragraph={paragraph} />
+          </p>
+        ))}
+      </div>
+    ) : null;
+
+  const moreNode = more ? (
+    <CaseStudyShowMore
+      heading={more.heading}
+      blocks={more.blocks}
+      closedLabel={more.closedLabel}
+      openLabel={more.openLabel}
+    />
+  ) : null;
+
+  if (solo) {
+    return (
+      <ScrollReveal>
+        <div className="work-case-subblock">
+          {headingNode}
+          {bodyNode}
+        </div>
+      </ScrollReveal>
+    );
+  }
+
   if (mediaHeroLayout) {
     return (
-      <>
+      <ScrollReveal>
         {media.map((item) => (
           <CaseStudyHeroSlot key={`${item.alt}-${item.caption}`} item={item} />
         ))}
-      </>
+      </ScrollReveal>
     );
   }
 
   if (mediaFullLayout) {
     return (
-      <div
-        className={`work-case-split work-case-split--full${subBlock ? " work-case-split--sub" : ""}`}
-      >
-        <div className="work-case-media work-case-media--full">
-          {media.map((item) => (
-            <CaseStudyMedia key={`${item.alt}-${item.caption}`} item={item} />
-          ))}
+      <ScrollReveal>
+        <div
+          className={`work-case-split work-case-split--full${subBlock ? " work-case-split--sub" : ""}`}
+        >
+          <div className="work-case-media work-case-media--full">
+            {media.map((item) => (
+              <CaseStudyMedia key={`${item.alt}-${item.caption}`} item={item} />
+            ))}
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
     );
   }
 
-  if (mediaOnlyRow) {
+  if (mediaGrid3 || mediaOnlyRow || mediaRowAfterCopy) {
     return (
-      <div className="work-case-media-row-wrap">
+      <ScrollReveal>
         <div
-          className={`work-case-media-row${media.length === 2 ? " work-case-media-row--pair" : ""}${media.length === 3 ? " work-case-media-row--triptych" : ""}`}
+          className={`work-case-media-row-wrap${mediaRowAfterCopy ? " work-case-media-row-wrap--with-copy" : ""}${subBlock ? " work-case-media-row-wrap--sub" : ""}`}
         >
-          {media.map((item) => (
-            <CaseStudyMedia
-              key={`${item.alt}-${item.caption}`}
-              item={item}
-              inRow
-            />
-          ))}
-        </div>
-        {rowCaption ? (
-          <p
-            className="work-case-caption work-case-row-caption"
-            style={{ fontFamily: secondaryFont }}
+          {mediaRowAfterCopy ? (
+            <div className="work-case-media-row-copy">
+              {headingNode}
+              {bodyNode}
+            </div>
+          ) : null}
+          <div
+            className={`work-case-media-row${mediaGrid3 ? " work-case-media-row--grid-3" : ""}${!mediaGrid3 && media.length === 2 ? " work-case-media-row--pair" : ""}${!mediaGrid3 && media.length === 3 ? " work-case-media-row--triptych" : ""}${!mediaGrid3 && media.length === 4 ? " work-case-media-row--quad" : ""}${!mediaGrid3 && media.length === 5 ? " work-case-media-row--five" : ""}${mediaRowClass ? ` ${mediaRowClass}` : ""}`}
           >
-            {rowCaption}
-          </p>
-        ) : null}
-      </div>
+            {media.map((item) => (
+              <CaseStudyMedia
+                key={`${item.alt}-${item.caption}`}
+                item={item}
+                inRow
+              />
+            ))}
+          </div>
+          {rowCaption ? (
+            <p
+              className="work-case-caption work-case-row-caption"
+              style={{ fontFamily: secondaryFont }}
+            >
+              {rowCaption}
+            </p>
+          ) : null}
+        </div>
+      </ScrollReveal>
     );
   }
 
   return (
+    <ScrollReveal>
     <div
       className={`work-case-split${subBlock ? " work-case-split--sub" : ""}${mobileMediaBeforeCopyMedia ? " work-case-split--mobile-media-first" : ""}${detachCodeWindow ? " work-case-split--mobile-media-before-code" : ""}${splitAfterCodeMedia ? " work-case-split--mobile-after-code-media" : ""}`}
     >
       <div className="work-case-copy">
-        {heading ? (
-          <h2 className="work-case-heading" style={{ fontFamily: displayFont }}>
-            {heading}
-          </h2>
-        ) : null}
-        {paragraphs.length > 0 ? (
-          <div className="work-case-body" style={{ fontFamily: secondaryFont }}>
-            {paragraphs.map((paragraph) => (
-              <p key={JSON.stringify(paragraph).slice(0, 48)}>
-                <CaseStudyParagraph paragraph={paragraph} />
-              </p>
-            ))}
-          </div>
-        ) : null}
+        {headingNode}
+        {bodyNode}
+        {moreNode}
         {codeWindow && !detachCodeWindow ? (
           <CaseStudyCodeWindow
             title={codeWindow.title}
@@ -555,29 +757,68 @@ function CaseStudyBlock({
         </div>
       ) : null}
     </div>
+    </ScrollReveal>
   );
 }
 
 function CaseStudySection({ section }: { section: ProjectCaseStudySection }) {
+  const hasSectionHeading = Boolean(section.heading);
+  const blocksLayout = section.blocksLayout ?? "stack";
+  const isBlocksGrid = blocksLayout === "grid-2";
+
+  const blocks = section.blocks.map((block: ProjectCaseStudyBlock, index) => (
+    <CaseStudyBlock
+      key={`${section.id}-${index}`}
+      heading={
+        hasSectionHeading
+          ? block.heading
+          : index === 0
+            ? (block.heading ?? section.heading)
+            : block.heading
+      }
+      headingAs={hasSectionHeading && block.heading ? "h3" : "h2"}
+      paragraphs={block.paragraphs}
+      media={isBlocksGrid ? [] : block.media}
+      copyMedia={isBlocksGrid ? [] : block.copyMedia}
+      afterCodeMedia={isBlocksGrid ? [] : block.afterCodeMedia}
+      mobileMediaBeforeCopyMedia={
+        isBlocksGrid ? false : block.mobileMediaBeforeCopyMedia
+      }
+      mobileMediaBeforeCodeWindow={
+        isBlocksGrid ? false : block.mobileMediaBeforeCodeWindow
+      }
+      preserveMediaColumn={isBlocksGrid ? false : block.preserveMediaColumn}
+      mediaLayout={block.mediaLayout}
+      rowCaption={block.rowCaption}
+      mediaRowClass={block.mediaRowClass}
+      codeWindow={isBlocksGrid ? undefined : block.codeWindow}
+      subBlock={!isBlocksGrid && index > 0}
+      solo={isBlocksGrid}
+    />
+  ));
+
   return (
-    <section id={section.id} className="work-case-section" aria-labelledby={section.id}>
-      {section.blocks.map((block: ProjectCaseStudyBlock, index) => (
-        <CaseStudyBlock
-          key={`${section.id}-${index}`}
-          heading={index === 0 ? section.heading : undefined}
-          paragraphs={block.paragraphs}
-          media={block.media}
-          copyMedia={block.copyMedia}
-          afterCodeMedia={block.afterCodeMedia}
-          mobileMediaBeforeCopyMedia={block.mobileMediaBeforeCopyMedia}
-          mobileMediaBeforeCodeWindow={block.mobileMediaBeforeCodeWindow}
-          preserveMediaColumn={block.preserveMediaColumn}
-          mediaLayout={block.mediaLayout}
-          rowCaption={block.rowCaption}
-          codeWindow={block.codeWindow}
-          subBlock={index > 0}
-        />
-      ))}
+    <section
+      id={section.id}
+      className="work-case-section"
+      aria-labelledby={hasSectionHeading ? `${section.id}-heading` : section.id}
+    >
+      {hasSectionHeading ? (
+        <h2
+          id={`${section.id}-heading`}
+          className="work-case-heading work-case-heading--section"
+          style={{ fontFamily: displayFont }}
+        >
+          {section.heading}
+        </h2>
+      ) : null}
+      {isBlocksGrid ? (
+        <div className="work-case-blocks-grid work-case-blocks-grid--2">
+          {blocks}
+        </div>
+      ) : (
+        blocks
+      )}
     </section>
   );
 }
@@ -616,10 +857,20 @@ export default function WorkProjectCaseStudy({
 
       {showHero ? (
         <div
-          className={`work-case-hero relative w-full overflow-hidden${content.hero?.bare ? "" : " work-grey-box"}${content.hero?.transparent ? " work-case-hero--transparent" : ""}`}
+          className={`work-case-hero relative w-full${
+            isHeroCycleMedia(content.hero!) && content.hero!.heroStickers?.length
+              ? " work-case-hero--stickers"
+              : " overflow-hidden"
+          }${content.hero?.bare ? "" : " work-grey-box"}${content.hero?.transparent ? " work-case-hero--transparent" : ""}`}
           style={{ aspectRatio: content.hero?.aspectRatio ?? "21 / 9" }}
         >
-          {content.hero!.transparent && content.hero!.kind === "image" ? (
+          {isHeroCycleMedia(content.hero!) ? (
+            <CaseStudyHeroCycle
+              slides={content.hero!.heroSlides!}
+              stickers={content.hero!.heroStickers}
+              intervalMs={content.hero!.glyphIntervalMs}
+            />
+          ) : content.hero!.transparent && content.hero!.kind === "image" ? (
             <CaseStudyResponsiveHero hero={content.hero!} />
           ) : isVideoMedia(content.hero!) ? (
             <CaseStudyHeroVideo hero={content.hero!} />
@@ -641,7 +892,7 @@ export default function WorkProjectCaseStudy({
               fill
               unoptimized
               priority
-              className="object-cover object-center"
+              className="object-contain object-center"
               sizes="100vw"
             />
           )}
@@ -653,6 +904,7 @@ export default function WorkProjectCaseStudy({
           heading={content.intro.heading}
           paragraphs={content.intro.paragraphs}
           media={content.intro.media}
+          more={content.intro.more}
           mobileMediaBeforeCodeWindow={
             content.intro.mobileMediaBeforeCodeWindow
           }
@@ -665,12 +917,14 @@ export default function WorkProjectCaseStudy({
       ))}
 
       {content.footerNote ? (
-        <p
-          className="work-case-footer-note"
-          style={{ fontFamily: secondaryFont }}
-        >
-          {content.footerNote}
-        </p>
+        <ScrollReveal>
+          <p
+            className="work-case-footer-note"
+            style={{ fontFamily: secondaryFont }}
+          >
+            {content.footerNote}
+          </p>
+        </ScrollReveal>
       ) : null}
     </article>
   );

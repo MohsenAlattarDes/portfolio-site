@@ -76,7 +76,8 @@ export const anoraCaseStudy: ProjectCaseStudy = {
               bare: true,
               kind: "code",
               codeSketch: "anora-process-stack",
-              spacingTop: "-30px",
+              maxWidth: "90%",
+              spacingTop: "-120px",
             },
           ],
         },
@@ -192,4 +193,6 @@ export const anoraCaseStudy: ProjectCaseStudy = {
       ],
     },
   ],
+  footerNote:
+    "*Recognized by the ArtCenter Gallery and Lithographix Gallery.*",
 };

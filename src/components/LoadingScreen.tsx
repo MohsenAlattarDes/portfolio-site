@@ -1,9 +1,11 @@
 "use client";
 
 import { dispatchIntroComplete } from "@/lib/intro";
+import { themeChromeColor, type Theme } from "@/lib/theme";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -11,6 +13,7 @@ import {
 
 type Beat = {
   bg: string;
+  chrome: string;
   boxFill: string;
   boxBorder: string;
   textColor: string;
@@ -24,6 +27,7 @@ type Beat = {
 const BEATS: Beat[] = [
   {
     bg: "var(--white)",
+    chrome: "#ffffff",
     boxFill: "var(--black)",
     boxBorder: "var(--black)",
     textColor: "var(--red)",
@@ -35,6 +39,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--red)",
+    chrome: "#ff0000",
     boxFill: "var(--white)",
     boxBorder: "var(--white)",
     textColor: "var(--red)",
@@ -46,6 +51,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--white)",
+    chrome: "#ffffff",
     boxFill: "var(--red)",
     boxBorder: "var(--red)",
     textColor: "var(--white)",
@@ -57,6 +63,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--black)",
+    chrome: "#000000",
     boxFill: "var(--white)",
     boxBorder: "var(--white)",
     textColor: "var(--red)",
@@ -68,6 +75,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--red)",
+    chrome: "#ff0000",
     boxFill: "var(--black)",
     boxBorder: "var(--black)",
     textColor: "var(--white)",
@@ -79,6 +87,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--white)",
+    chrome: "#ffffff",
     boxFill: "var(--red)",
     boxBorder: "var(--red)",
     textColor: "var(--black)",
@@ -90,6 +99,7 @@ const BEATS: Beat[] = [
   },
   {
     bg: "var(--black)",
+    chrome: "#000000",
     boxFill: "var(--red)",
     boxBorder: "var(--red)",
     textColor: "var(--white)",
@@ -102,16 +112,50 @@ const BEATS: Beat[] = [
 ];
 
 const EXIT_MS = 600;
+const INTRO_SEEN_KEY = "site-intro-seen";
 
 type Phase = "flash" | "exit" | "done";
 
+function setChromeColor(color: string) {
+  const root = document.documentElement;
+  root.style.backgroundColor = color;
+  document.body.style.backgroundColor = color;
+  let themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (!themeMeta) {
+    themeMeta = document.createElement("meta");
+    themeMeta.setAttribute("name", "theme-color");
+    document.head.appendChild(themeMeta);
+  }
+  themeMeta.setAttribute("content", color);
+}
+
+function readDomTheme(): Theme {
+  return document.documentElement.getAttribute("data-theme") === "light"
+    ? "light"
+    : "dark";
+}
+
 function finishIntro() {
   document.body.classList.remove("site-loading");
+  setChromeColor(themeChromeColor(readDomTheme()));
+  try {
+    sessionStorage.setItem(INTRO_SEEN_KEY, "1");
+  } catch {
+    // private browsing
+  }
   dispatchIntroComplete();
 }
 
+function hasSeenIntro() {
+  try {
+    return sessionStorage.getItem(INTRO_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export default function LoadingScreen() {
-  const [phase, setPhase] = useState<Phase>("flash");
+  const [phase, setPhase] = useState<Phase | null>(null);
   const [beatIndex, setBeatIndex] = useState(0);
   const curtainRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef(false);
@@ -137,14 +181,26 @@ export default function LoadingScreen() {
     setPhase((current) => (current === "flash" ? "exit" : current));
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (hasSeenIntro()) {
+      doneRef.current = true;
+      finishIntro();
+      setPhase("done");
+      return;
+    }
+
     document.body.classList.add("site-loading");
+    setChromeColor(BEATS[0].chrome);
+    setPhase("flash");
 
     let elapsed = 0;
     BEATS.forEach((beat, i) => {
       if (i === 0) return;
       elapsed += BEATS[i - 1].duration;
-      schedule(() => setBeatIndex(i), elapsed);
+      schedule(() => {
+        setBeatIndex(i);
+        setChromeColor(beat.chrome);
+      }, elapsed);
     });
 
     const total = BEATS.reduce((sum, b) => sum + b.duration, 0);
@@ -153,6 +209,7 @@ export default function LoadingScreen() {
     return () => {
       clearTimers();
       document.body.classList.remove("site-loading");
+      setChromeColor(themeChromeColor(readDomTheme()));
     };
   }, [startExit]);
 
@@ -178,7 +235,11 @@ export default function LoadingScreen() {
   useEffect(() => {
     if (phase !== "flash") return;
 
-    const skip = () => startExit();
+    const skip = () => {
+      // Let the same gesture hit whatever is under the curtain (nav / work links).
+      if (curtainRef.current) curtainRef.current.style.pointerEvents = "none";
+      startExit();
+    };
     window.addEventListener("keydown", skip);
     window.addEventListener("pointerdown", skip);
 
@@ -188,7 +249,7 @@ export default function LoadingScreen() {
     };
   }, [phase, startExit]);
 
-  if (phase === "done") return null;
+  if (phase === null || phase === "done") return null;
 
   const beat = BEATS[Math.min(beatIndex, BEATS.length - 1)];
 
@@ -208,7 +269,7 @@ export default function LoadingScreen() {
   return (
     <div
       ref={curtainRef}
-      className={`flash-curtain fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden ${
+      className={`flash-curtain fixed z-[10000] flex items-center justify-center overflow-hidden ${
         phase === "exit" ? "flash-curtain--exit" : ""
       }`}
       style={{ backgroundColor: beat.bg }}

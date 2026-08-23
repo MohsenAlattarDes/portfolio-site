@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useInView } from "@/lib/useInView";
 import type { PublicationSpread } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
 const FLIP_MS = 620;
+const HINT_MS = 980;
+const HINT_DELAY_MS = 700;
 
 type View = {
   left: PublicationSpread | null;
@@ -13,7 +16,7 @@ type View = {
 };
 
 type Flip = {
-  dir: "next" | "prev";
+  dir: "next" | "prev" | "hint";
   frontSrc: string;
   frontAlt: string;
   backSrc: string;
@@ -65,12 +68,24 @@ export default function CaseStudyPublicationFlipbook({
 
   const [index, setIndex] = useState(4);
   const [flip, setFlip] = useState<Flip | null>(null);
+  const [hintPulse, setHintPulse] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const hintDone = useRef(false);
+  const { ref: inViewRef, inView } = useInView<HTMLDivElement>(
+    "0px 0px -12% 0px",
+    0.35,
+  );
   const total = views.length;
   const view = views[index]!;
 
+  const cancelHint = useCallback(() => {
+    hintDone.current = true;
+    setHintPulse(false);
+  }, []);
+
   const goNext = useCallback(() => {
     if (flip || index >= total - 1) return;
+    cancelHint();
     const nextView = views[index + 1]!;
     setFlip({
       dir: "next",
@@ -81,10 +96,11 @@ export default function CaseStudyPublicationFlipbook({
       baseLeft: view.left,
       baseRight: nextView.right,
     });
-  }, [flip, index, total, view, views]);
+  }, [cancelHint, flip, index, total, view, views]);
 
   const goPrev = useCallback(() => {
     if (flip || index <= 0) return;
+    cancelHint();
     const prevView = views[index - 1]!;
     setFlip({
       dir: "prev",
@@ -95,16 +111,53 @@ export default function CaseStudyPublicationFlipbook({
       baseLeft: prevView.left,
       baseRight: view.right,
     });
-  }, [flip, index, view, views]);
+  }, [cancelHint, flip, index, view, views]);
 
   useEffect(() => {
     if (!flip) return;
+    const duration = flip.dir === "hint" ? HINT_MS : FLIP_MS;
     const timer = window.setTimeout(() => {
-      setIndex((current) => (flip.dir === "next" ? current + 1 : current - 1));
+      if (flip.dir === "next") setIndex((current) => current + 1);
+      if (flip.dir === "prev") setIndex((current) => current - 1);
       setFlip(null);
-    }, FLIP_MS);
+      if (flip.dir === "hint") {
+        hintDone.current = true;
+        setHintPulse(false);
+      }
+    }, duration);
     return () => window.clearTimeout(timer);
   }, [flip]);
+
+  useEffect(() => {
+    if (
+      !inView ||
+      hintDone.current ||
+      flip ||
+      index >= total - 1 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (hintDone.current || flip || index >= total - 1) return;
+      const nextView = views[index + 1];
+      if (!nextView || !view.right) return;
+
+      setHintPulse(true);
+      setFlip({
+        dir: "hint",
+        frontSrc: view.right.src,
+        frontAlt: view.right.alt,
+        backSrc: nextView.left?.src ?? "",
+        backAlt: nextView.left?.alt ?? "",
+        baseLeft: view.left,
+        baseRight: nextView.right ?? view.right,
+      });
+    }, HINT_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [flip, inView, index, total, view, views]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -139,7 +192,8 @@ export default function CaseStudyPublicationFlipbook({
   return (
     <figure className="work-case-figure work-case-figure--flipbook">
       <div
-        className="work-case-flipbook"
+        ref={inViewRef}
+        className={`work-case-flipbook${hintPulse ? " work-case-flipbook--hint" : ""}`}
         onTouchStart={(event) => {
           touchStartX.current = event.changedTouches[0]?.clientX ?? null;
         }}
@@ -223,7 +277,7 @@ export default function CaseStudyPublicationFlipbook({
           </p>
           <button
             type="button"
-            className="work-case-flipbook__button"
+            className={`work-case-flipbook__button${hintPulse ? " work-case-flipbook__button--hint" : ""}`}
             onClick={goNext}
             disabled={index === total - 1 || Boolean(flip)}
             aria-label="Next page"

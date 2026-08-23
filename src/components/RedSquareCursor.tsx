@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { mountCursorSketch } from "@/lib/cursor/mountCursorSketch";
 import { INTRO_COMPLETE_EVENT } from "@/lib/intro";
 
 const DESKTOP_MQ = "(min-width: 62rem)";
+const INTRO_SEEN_KEY = "site-intro-seen";
 
 function isEnlargeTarget(target: Element | null): boolean {
   if (!target) return false;
@@ -20,18 +21,33 @@ function isClickableTarget(target: Element | null): boolean {
   );
 }
 
+function hasSeenIntro() {
+  try {
+    return sessionStorage.getItem(INTRO_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export default function RedSquareCursor() {
   const sketchRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const squareRef = useRef<HTMLDivElement>(null);
+  const visibleRef = useRef(false);
+  const overLinkRef = useRef(false);
   const [active, setActive] = useState(false);
   const [introComplete, setIntroComplete] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [overLink, setOverLink] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
+  // Sync with intro immediately — LoadingScreen may already have finished
+  // (and dispatched) in an earlier layout effect on return visits.
+  useLayoutEffect(() => {
+    if (hasSeenIntro()) {
+      setIntroComplete(true);
+      return;
+    }
+
     const onIntroComplete = () => setIntroComplete(true);
     window.addEventListener(INTRO_COMPLETE_EVENT, onIntroComplete);
-
     const fallback = window.setTimeout(() => setIntroComplete(true), 5000);
 
     return () => {
@@ -54,40 +70,72 @@ export default function RedSquareCursor() {
   }, [active, introComplete]);
 
   useEffect(() => {
-    const node = sketchRef.current;
-    if (!node) return;
-    node.dataset.cursorHidden = visible ? "false" : "true";
-    node.dataset.cursorOverLink = overLink ? "true" : "false";
-    node.dataset.cursorX = String(pos.x);
-    node.dataset.cursorY = String(pos.y);
-  }, [visible, overLink, pos.x, pos.y]);
-
-  useEffect(() => {
     if (!active || !introComplete) return;
 
-    const onMove = (e: MouseEvent) => {
-      const next = { x: e.clientX, y: e.clientY };
-      setPos(next);
+    const sketch = sketchRef.current;
+    const ring = ringRef.current;
+    if (!sketch || !ring) return;
+
+    const setHidden = (hidden: boolean) => {
+      visibleRef.current = !hidden;
+      sketch.dataset.cursorHidden = hidden ? "true" : "false";
+      ring.style.opacity = hidden ? "0" : "1";
+    };
+
+    const setOverLink = (next: boolean) => {
+      if (overLinkRef.current === next) return;
+      overLinkRef.current = next;
+      sketch.dataset.cursorOverLink = next ? "true" : "false";
+      if (squareRef.current) {
+        squareRef.current.style.backgroundColor = next
+          ? "#888888"
+          : "var(--red)";
+      }
+    };
+
+    const onMove = (e: PointerEvent) => {
+      // Ignore touch / pen — custom cursor is desktop-mouse only.
+      if (e.pointerType && e.pointerType !== "mouse") return;
+
+      const x = e.clientX;
+      const y = e.clientY;
+
+      ring.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      sketch.dataset.cursorX = String(x);
+      sketch.dataset.cursorY = String(y);
+
       const target =
         e.target instanceof Element
           ? e.target
-          : document.elementFromPoint(next.x, next.y);
+          : document.elementFromPoint(x, y);
       const overLetterSplash =
         target?.closest("[data-letter-splash]") !== null;
-      setVisible(!overLetterSplash);
+      const overSiteEmbed =
+        target?.closest(".work-case-site-embed") !== null;
+      const hide = overLetterSplash || overSiteEmbed;
+
+      setHidden(hide);
       setOverLink(
-        !overLetterSplash &&
-          isClickableTarget(target) &&
-          !isEnlargeTarget(target),
+        !hide && isClickableTarget(target) && !isEnlargeTarget(target),
       );
     };
-    const onLeave = () => setVisible(false);
 
-    window.addEventListener("mousemove", onMove);
-    document.documentElement.addEventListener("mouseleave", onLeave);
+    // Only hide when the pointer really leaves the window — Safari fires
+    // documentElement mouseleave spuriously (iframes, scroll, media controls).
+    const onOut = (e: MouseEvent) => {
+      const next = e.relatedTarget;
+      if (next instanceof Node && document.documentElement.contains(next)) {
+        return;
+      }
+      setHidden(true);
+      setOverLink(false);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("mouseout", onOut);
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      document.documentElement.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("mouseout", onOut);
     };
   }, [active, introComplete]);
 
@@ -105,13 +153,13 @@ export default function RedSquareCursor() {
       />
 
       <div
+        ref={ringRef}
         aria-hidden="true"
-        className="fixed pointer-events-none z-[3]"
+        className="fixed top-0 left-0 pointer-events-none z-[3]"
         style={{
-          left: pos.x,
-          top: pos.y,
-          transform: "translate(-50%, -50%)",
-          opacity: visible ? 1 : 0,
+          opacity: 0,
+          transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
+          willChange: "transform, opacity",
         }}
       >
         <div
@@ -122,9 +170,11 @@ export default function RedSquareCursor() {
           }}
         >
           <div
-            className="size-3 transition-colors duration-150 ease-out"
+            ref={squareRef}
+            className="size-3"
             style={{
-              backgroundColor: overLink ? "#888888" : "var(--red)",
+              backgroundColor: "var(--red)",
+              transition: "background-color 150ms ease-out",
             }}
           />
         </div>

@@ -24,7 +24,7 @@ export const ANORA_PROCESS_STACK: ProcessStackDefinition = {
   fps: 30,
   pageScale: 0.94,
   scans: Array.from({ length: 23 }, (_, index) =>
-    `/work/anora/scans/${String(index).padStart(2, "0")}.jpg`,
+    `/work/anora/scans-web/${String(index).padStart(2, "0")}.webp`,
   ),
   rotations: [
     -1.6731, 3.3215, -2.1204, -2.8986, -1.0859, 5.6424, 3.2081, 0.7349,

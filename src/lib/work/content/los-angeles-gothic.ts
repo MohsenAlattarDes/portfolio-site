@@ -113,4 +113,5 @@ export const losAngelesGothicCaseStudy: ProjectCaseStudy = {
       ],
     },
   ],
+  footerNote: "*Recognized by the HMCT Gallery.*",
 };

@@ -1,5 +1,6 @@
 import { MOBILE_MQ } from "@/lib/mobile-float-words/constants";
 import { createMobileFloatWords } from "@/lib/mobile-float-words/createMobileFloatWords";
+import { preloadLatinFont } from "@/lib/sketch-font";
 
 type P5Handle = {
   remove: () => void;
@@ -20,6 +21,7 @@ export function mountMobileFloatWords(container: HTMLElement) {
   const boot = async () => {
     if (!window.matchMedia(MOBILE_MQ).matches) return;
 
+    await preloadLatinFont();
     const { default: P5 } = await import("p5");
     if (destroyed) return;
 

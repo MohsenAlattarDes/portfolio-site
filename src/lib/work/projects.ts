@@ -6,10 +6,15 @@ export type WorkProject = {
   category: string;
   /** Image, GIF, or video path under /public */
   thumbnail: string;
+  thumbnailSlides?: string[];
+  thumbnailSlideIntervalMs?: number;
+  thumbnailObjectPosition?: string;
   thumbnailPoster?: string;
   thumbnailVideoSources?: { src: string; type: string }[];
   thumbnailTransparent?: boolean;
   thumbnailMotion?: "pan-x";
+  /** Scale factor for pan-x thumbs (>1 zooms into the subject). */
+  thumbnailPanZoom?: number;
 };
 
 export function hasProjectThumbnail(thumbnail: string) {
@@ -25,7 +30,30 @@ export const WORK_PROJECTS: WorkProject[] = [
     slug: "qalam",
     lines: ["QALAM"],
     category: "Master's Thesis Project",
-    thumbnail: "/work/placeholder.svg",
+    thumbnail: "/work/qalam/hero/anatomy.webp",
+    thumbnailSlides: [
+      "/work/qalam/hero/anatomy.webp",
+      "/work/qalam/hero/ibn-muqla.webp",
+      "/work/qalam/hero/laptop.webp",
+      "/work/qalam/hero/linotype.webp",
+      "/work/qalam/hero/nuqta.webp",
+    ],
+    thumbnailSlideIntervalMs: 2100,
+    thumbnailObjectPosition: "center 72%",
+  },
+  {
+    slug: "king-of-clubs",
+    lines: ["KING OF", "CLUBS"],
+    category: "Branding + Motion",
+    thumbnail: "/work/king-of-clubs/type-arrows-v2.mp4",
+    thumbnailPoster: "/work/king-of-clubs/type-arrows-v2-poster.jpg",
+    thumbnailVideoSources: [
+      {
+        src: "/work/king-of-clubs/type-arrows-v2.mp4",
+        type: "video/mp4",
+      },
+    ],
+    thumbnailObjectPosition: "center center",
   },
   {
     slug: "kuwaits-cake-picnic",
@@ -76,6 +104,8 @@ export const WORK_PROJECTS: WorkProject[] = [
     lines: ["JUJU", "SODA"],
     category: "Packaging Design",
     thumbnail: "/work/juju-soda/hero.jpg",
+    thumbnailMotion: "pan-x",
+    thumbnailPanZoom: 1.55,
   },
   {
     slug: "microverse",

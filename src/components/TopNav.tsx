@@ -9,7 +9,7 @@ const topInset =
 export default function TopNav() {
   return (
     <nav
-      className="lg:hidden sticky top-0 z-50 grid w-full shrink-0 grid-cols-[3rem_1fr_3rem] items-center gap-2 px-4 pb-3"
+      className="site-top-nav lg:hidden fixed inset-x-0 top-0 z-50 grid w-full grid-cols-[3rem_1fr_3rem] items-center gap-2 px-4 pb-3"
       style={{
         paddingTop: topInset,
         fontFamily: "var(--font-secondary)",

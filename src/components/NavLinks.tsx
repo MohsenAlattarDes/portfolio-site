@@ -158,7 +158,13 @@ export default function NavLinks({
   }, [updatePrompt, pathname]);
 
   const overlayStyle: CSSProperties = isVertical
-    ? { ...textStyle, position: "absolute", top: 0, left: 0 }
+    ? {
+        ...textStyle,
+        position: "absolute",
+        top: 0,
+        left: "50%",
+        transform: "translateX(-50%) rotate(180deg)",
+      }
     : {
         ...textStyle,
         position: "absolute",
@@ -203,7 +209,9 @@ export default function NavLinks({
             }}
             href={href}
             aria-current={isActive ? "page" : undefined}
-            className="group/nav relative block shrink-0 select-none"
+            className={`group/nav relative block shrink-0 select-none${
+              isVertical ? " justify-self-center" : ""
+            }`}
           >
             <span
               aria-hidden

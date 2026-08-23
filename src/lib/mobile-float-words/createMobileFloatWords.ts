@@ -13,6 +13,7 @@ import {
 } from "@/lib/mobile-float-words/constants";
 import { FLOAT_PHRASES } from "@/lib/mobile-float-words/phrases";
 import { themeColors } from "@/lib/ocean-wave/theme";
+import { resolveLatinFont } from "@/lib/sketch-font";
 
 type P5 = InstanceType<typeof p5js>;
 
@@ -223,7 +224,7 @@ export function createMobileFloatWords(container: HTMLElement) {
       canvas.parent(container);
       canvas.elt.style.background = "transparent";
       p.frameRate(30);
-      p.textFont("Tahoma");
+      p.textFont(resolveLatinFont());
       p.textStyle(p.BOLD);
       reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (resizeToContainer(p)) seedFloaters(p);
@@ -238,6 +239,8 @@ export function createMobileFloatWords(container: HTMLElement) {
       const now = p.millis();
       const fadeStep = p.deltaTime / FADE_MS;
 
+      p.textFont(resolveLatinFont());
+      p.textStyle(p.BOLD);
       p.textAlign(p.CENTER, p.CENTER);
       p.noStroke();
 

@@ -30,8 +30,25 @@ export type ProjectMedia = {
   bare?: boolean;
   transparent?: boolean;
   imageMotion?: "pan-x";
-  kind?: "image" | "video" | "pdf" | "code" | "glyph-cycle" | "publication-flipbook";
+  kind?: "image" | "video" | "pdf" | "code" | "glyph-cycle" | "publication-flipbook" | "scattered-stack" | "character-cast" | "site-embed" | "interface-kit" | "interactive-svg" | "hero-cycle";
   publicationSpreads?: PublicationSpread[];
+  scatterImages?: PublicationSpread[];
+  castImages?: PublicationSpread[];
+  heroSlides?: PublicationSpread[];
+  heroStickers?: PublicationSpread[];
+  /** Static foreground image over cycling heroSlides (e.g. kits over grass). */
+  heroOverlay?: PublicationSpread;
+  /** Clip cycling slides to a circle behind the overlay. */
+  heroBackdropShape?: "rect" | "circle";
+  heroCycleFit?: "contain" | "cover";
+  heroCycleFadeMs?: number;
+  /** Shared id so multiple hero-cycles advance on the same clock. */
+  heroCycleSyncId?: string;
+  interfaceColors?: { name: string; hex: string; on?: "light" | "dark" }[];
+  interfaceCategories?: { label: string; color: string }[];
+  interfaceElements?: PublicationSpread[];
+  embedUrl?: string;
+  embedDisplayUrl?: string;
   codeSketch?: CaseStudyCodeSketchId;
   codeSketchCopies?: number;
   mobileVideoFallback?: string;
@@ -43,6 +60,7 @@ export type ProjectMedia = {
   poster?: string;
   videoControls?: boolean;
   videoPlaybackRate?: number;
+  videoSpeedControls?: boolean;
   cropLeft?: number;
   rotate?: number;
   maxWidth?: string;
@@ -66,6 +84,7 @@ export type ProjectCaseStudyParagraph =
   | Array<string | ProjectCaseStudyLink>;
 
 export type ProjectCaseStudyBlock = {
+  heading?: string;
   paragraphs: ProjectCaseStudyParagraph[];
   media: ProjectMedia[];
   copyMedia?: ProjectMedia[];
@@ -73,8 +92,10 @@ export type ProjectCaseStudyBlock = {
   mobileMediaBeforeCopyMedia?: boolean;
   mobileMediaBeforeCodeWindow?: boolean;
   preserveMediaColumn?: boolean;
-  mediaLayout?: "stack" | "row" | "hero" | "full";
+  mediaLayout?: "stack" | "row" | "grid-3" | "hero" | "full";
   rowCaption?: string;
+  /** Extra class on media-only rows (e.g. equal-height pair). */
+  mediaRowClass?: string;
   codeWindow?: {
     title?: string;
     source: string;
@@ -84,7 +105,19 @@ export type ProjectCaseStudyBlock = {
 export type ProjectCaseStudySection = {
   id: string;
   heading?: string;
+  /** Lay subsection blocks out in columns instead of a vertical stack. */
+  blocksLayout?: "stack" | "grid-2";
   blocks: ProjectCaseStudyBlock[];
+};
+
+export type CaseStudyShowMoreContent = {
+  heading?: string;
+  closedLabel?: string;
+  openLabel?: string;
+  blocks: {
+    heading: string;
+    paragraphs: string[];
+  }[];
 };
 
 export type ProjectCaseStudy = {
@@ -94,6 +127,7 @@ export type ProjectCaseStudy = {
     heading: string;
     paragraphs: ProjectCaseStudyParagraph[];
     media: ProjectMedia[];
+    more?: CaseStudyShowMoreContent;
     mobileMediaBeforeCodeWindow?: boolean;
     codeWindow?: {
       title?: string;

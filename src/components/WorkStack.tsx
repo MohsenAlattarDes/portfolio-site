@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WorkProjectThumbnail from "@/components/work/WorkProjectThumbnail";
 import WorkTitleText from "@/components/WorkTitleText";
@@ -113,6 +114,7 @@ function SplitPreview({ active }: { active: string }) {
 }
 
 export default function WorkStack() {
+  const router = useRouter();
   const [hovered, setHovered] = useState<string | null>(null);
   const [autoPreviewIndex, setAutoPreviewIndex] = useState(0);
   const [mobileActiveSlug, setMobileActiveSlug] = useState(DEFAULT_SLUG);
@@ -127,6 +129,12 @@ export default function WorkStack() {
     AUTO_PREVIEW_PROJECTS[autoPreviewIndex]?.slug ?? DEFAULT_SLUG;
   const previewSlug = hoveredHasThumbnail ? hovered! : autoPreviewSlug;
 
+  useEffect(() => {
+    for (const project of WORK_PROJECTS) {
+      router.prefetch(`/work/${project.slug}`);
+    }
+  }, [router]);
+
   const syncLayout = useCallback(() => {
     syncFooterOffset();
   }, []);
@@ -135,9 +143,10 @@ export default function WorkStack() {
     syncLayout();
 
     window.addEventListener("resize", syncLayout);
+    window.addEventListener("scroll", syncLayout, { passive: true });
 
-    const scrollRoot = document.querySelector<HTMLElement>(".overflow-y-auto");
-    scrollRoot?.addEventListener("scroll", syncLayout, { passive: true });
+    const siteMain = document.querySelector<HTMLElement>(".site-main");
+    siteMain?.addEventListener("scroll", syncLayout, { passive: true });
 
     const footer = document.querySelector("footer");
     const footerObserver =
@@ -148,7 +157,8 @@ export default function WorkStack() {
 
     return () => {
       window.removeEventListener("resize", syncLayout);
-      scrollRoot?.removeEventListener("scroll", syncLayout);
+      window.removeEventListener("scroll", syncLayout);
+      siteMain?.removeEventListener("scroll", syncLayout);
       footerObserver?.disconnect();
     };
   }, [syncLayout]);
@@ -170,18 +180,12 @@ export default function WorkStack() {
     const mq = window.matchMedia(MOBILE_MQ);
     if (!mq.matches) return;
 
-    const scrollRoot = document.querySelector<HTMLElement>(".overflow-y-auto");
     let frame = 0;
 
     const measureFocus = () => {
       frame = 0;
 
-      const viewport =
-        scrollRoot?.getBoundingClientRect() ?? {
-          top: 0,
-          height: window.innerHeight,
-        };
-      const focusY = viewport.top + viewport.height * MOBILE_FOCUS_ANCHOR;
+      const focusY = window.innerHeight * MOBILE_FOCUS_ANCHOR;
 
       let nextSlug = WORK_PROJECTS[0].slug;
       let nearest = Number.POSITIVE_INFINITY;
@@ -189,6 +193,7 @@ export default function WorkStack() {
       mobileItemRefs.current.forEach((node, index) => {
         if (!node) return;
         const rect = node.getBoundingClientRect();
+        if (rect.height <= 0) return;
         const centerY = rect.top + rect.height * 0.5;
         const distance = Math.abs(centerY - focusY);
         if (distance < nearest) {
@@ -207,12 +212,24 @@ export default function WorkStack() {
     };
 
     measureFocus();
-    scrollRoot?.addEventListener("scroll", onScroll, { passive: true });
+
+    /* Mobile scrolls the document (not an inner .overflow-y-auto pane). */
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchmove", onScroll, { passive: true });
+    window.addEventListener("scrollend", measureFocus);
+    window.visualViewport?.addEventListener("scroll", onScroll);
+    window.visualViewport?.addEventListener("resize", onScroll);
     window.addEventListener("resize", onScroll);
+    mq.addEventListener("change", measureFocus);
 
     return () => {
-      scrollRoot?.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchmove", onScroll);
+      window.removeEventListener("scrollend", measureFocus);
+      window.visualViewport?.removeEventListener("scroll", onScroll);
+      window.visualViewport?.removeEventListener("resize", onScroll);
       window.removeEventListener("resize", onScroll);
+      mq.removeEventListener("change", measureFocus);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);

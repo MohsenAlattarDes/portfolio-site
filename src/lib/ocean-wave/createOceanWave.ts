@@ -1,6 +1,7 @@
 import type p5js from "p5";
 import { wrapIndex } from "@/lib/code-sketches/utils";
 import { themeColors } from "@/lib/ocean-wave/theme";
+import { resolveLatinFont } from "@/lib/sketch-font";
 
 type P5 = InstanceType<typeof p5js>;
 
@@ -155,7 +156,7 @@ export function createOceanWave(container: HTMLElement) {
       const canvas = p.createCanvas(1, 1);
       canvas.parent(container);
       p.frameRate(60);
-      p.textFont("Tahoma");
+      p.textFont(resolveLatinFont());
       p.textStyle(p.BOLD);
       resizeToContainer(p);
     };
@@ -182,6 +183,8 @@ export function createOceanWave(container: HTMLElement) {
         : 1;
       const rows = Math.ceil(p.height / ROW_STEP) + 2;
 
+      p.textFont(resolveLatinFont());
+      p.textStyle(p.BOLD);
       p.textAlign(p.CENTER, p.CENTER);
       p.noStroke();
 

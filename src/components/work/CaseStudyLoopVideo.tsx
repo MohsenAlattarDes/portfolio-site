@@ -9,10 +9,12 @@ export default function CaseStudyLoopVideo({
   item,
   className,
   style,
+  playbackRate,
 }: {
   item: ProjectMedia;
   className: string;
   style?: React.CSSProperties;
+  playbackRate?: number;
 }) {
   const { ref: inViewRef, inView } = useInView<HTMLDivElement>();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -21,13 +23,15 @@ export default function CaseStudyLoopVideo({
   const sources = videoSources ?? [{ src, type: "video/mp4" }];
   const sourceKey = sources.map((source) => source.src).join("|");
 
+  const rate = playbackRate ?? item.videoPlaybackRate ?? 1;
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    video.playbackRate = item.videoPlaybackRate ?? 1;
-    video.loop = true;
+    video.playbackRate = rate;
     video.muted = true;
+    video.loop = true;
 
     const play = () => {
       if (video.paused) {
@@ -58,7 +62,7 @@ export default function CaseStudyLoopVideo({
       video.removeEventListener("canplay", play);
       video.removeEventListener("playing", onPlaying);
     };
-  }, [inView, item.poster, item.videoPlaybackRate, sourceKey]);
+  }, [inView, item.poster, rate, sourceKey]);
 
   return (
     <div ref={inViewRef} className="absolute inset-0">

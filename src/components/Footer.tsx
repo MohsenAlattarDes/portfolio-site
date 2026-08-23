@@ -21,7 +21,10 @@ export default function Footer() {
       <div
         data-footer-content
         className="flex flex-col items-center gap-2 px-3 sm:px-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-start lg:gap-8"
-        style={{ paddingTop: "12px", paddingBottom: "12px" }}
+        style={{
+          paddingTop: "12px",
+          paddingBottom: "max(12px, env(safe-area-inset-bottom, 0px))",
+        }}
       >
         {/* Stamp logo + brand — hidden on phone/tablet-portrait, where the big circle logo above takes its place */}
         <div className="selection-invert hidden lg:flex items-center gap-2">

@@ -1,5 +1,6 @@
 import { DESKTOP_MQ } from "@/lib/ocean-wave/constants";
 import { createOceanWave } from "@/lib/ocean-wave/createOceanWave";
+import { preloadLatinFont } from "@/lib/sketch-font";
 
 type P5Handle = {
   remove: () => void;
@@ -29,6 +30,7 @@ export function mountOceanWave(container: HTMLElement) {
     await waitForSize();
     if (destroyed) return;
 
+    await preloadLatinFont();
     const { default: P5 } = await import("p5");
     if (destroyed) return;
 

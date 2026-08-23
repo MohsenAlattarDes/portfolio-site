@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import {
   CaseStudyCodeCanvas,
   CaseStudyCodeControls,
@@ -47,17 +47,17 @@ export default function CaseStudyCodeFigure({ item }: { item: ProjectMedia }) {
   const [speed, setSpeed] = useState<AnoraStackSpeed>("medium");
   const { ref, inView } = useInView<HTMLDivElement>();
   const figureRef = useRef<HTMLElement>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const ratio = item.aspectRatio ?? "4 / 3";
   const copies = item.codeSketchCopies ?? 1;
   const showSpeedControls =
     item.codeSketch !== "cake-picnic-ornament" &&
     item.codeSketch !== "cake-workshop-sadu";
   const canRegenerate = item.codeSketch === "cake-picnic-ornament";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const regenerate = () => {
     const hosts = figureRef.current?.querySelectorAll<RegenerableHost>(

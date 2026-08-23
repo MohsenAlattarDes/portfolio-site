@@ -11,3 +11,9 @@ export function parseTheme(value: string | undefined | null): Theme | null {
 export function themeCookieValue(theme: Theme) {
   return `${THEME_COOKIE}=${theme}; path=/; max-age=${THEME_COOKIE_MAX_AGE}; SameSite=Lax`;
 }
+
+/** Solid Safari status-bar / overscroll color — must match page bg or iPhone shows a top border. */
+export function themeChromeColor(theme: Theme) {
+  return theme === "light" ? "#ffffff" : "#000000";
+}
+

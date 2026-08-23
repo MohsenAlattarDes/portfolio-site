@@ -42,6 +42,8 @@ export default function CaseStudyThemeImage({
         className={className}
         decoding="async"
         loading="lazy"
+        width={intrinsicSize?.width}
+        height={intrinsicSize?.height}
         style={
           intrinsicSize
             ? {
