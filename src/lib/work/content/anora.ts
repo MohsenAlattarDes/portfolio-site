@@ -194,5 +194,5 @@ export const anoraCaseStudy: ProjectCaseStudy = {
     },
   ],
   footerNote:
-    "*Recognized by the ArtCenter Gallery and Lithographix Gallery.*",
+    "*Recognized by ECAL A Typographic Atlas.\n*Recognized by the Lithographix Gallery.\n*Recognized by the ArtCenter Gallery.*",
 };

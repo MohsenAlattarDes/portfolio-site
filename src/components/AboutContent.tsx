@@ -6,6 +6,7 @@ import type { Route } from "next";
 import { useEffect, useRef, useState } from "react";
 import AboutSketch from "@/components/AboutSketch";
 import { ABOUT_CONTACT_LINKS } from "@/lib/about/contact";
+import { runScramble } from "@/components/ScrambleText";
 
 const PORTRAIT = {
   dark: "/about/headshot-dark.jpg",
@@ -162,6 +163,8 @@ function AboutPortrait() {
 export default function AboutContent() {
   const [locationIdx, setLocationIdx] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [aboutLabel, setAboutLabel] = useState("ABOUT ME");
+  const aboutStopRef = useRef<(() => void) | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [hoveredContact, setHoveredContact] = useState<string | null>(null);
   const [canHoverContact, setCanHoverContact] = useState(false);
@@ -169,7 +172,18 @@ export default function AboutContent() {
 
   useEffect(() => {
     setMounted(true);
+    aboutStopRef.current?.();
+    aboutStopRef.current = runScramble("ABOUT ME", setAboutLabel);
+    return () => {
+      aboutStopRef.current?.();
+      aboutStopRef.current = null;
+    };
   }, []);
+
+  const scrambleAboutOnHover = () => {
+    aboutStopRef.current?.();
+    aboutStopRef.current = runScramble("ABOUT ME", setAboutLabel);
+  };
 
   useEffect(() => {
     const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -203,8 +217,9 @@ export default function AboutContent() {
           <h1
             className="about-me-title uppercase leading-[0.9] text-[var(--red)]"
             style={headingStyle}
+            onMouseEnter={scrambleAboutOnHover}
           >
-            ABOUT ME
+            {aboutLabel}
             <span
               className="about-me-sofar nav-prompt block normal-case text-[var(--red)]"
               style={{ fontFamily: "var(--font-secondary)" }}

@@ -485,7 +485,7 @@ function CaseStudyMedia({
 
   return (
     <figure
-      className={`work-case-figure${rowNatural ? " work-case-figure--row-natural" : ""}${rowContain ? " work-case-figure--row-contain" : ""}${rowWide ? " work-case-figure--row-wide" : ""}`}
+      className={`work-case-figure${rowNatural ? " work-case-figure--row-natural" : ""}${rowContain ? " work-case-figure--row-contain" : ""}${rowWide || rowCover ? " work-case-figure--row-wide" : ""}`}
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >
       {item.enlarge && !isVideo && !isPdf ? (

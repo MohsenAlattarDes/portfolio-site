@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { runScrambleLines } from "@/components/ScrambleText";
 import WorkProjectThumbnail from "@/components/work/WorkProjectThumbnail";
 import WorkTitleText from "@/components/WorkTitleText";
 import {
@@ -118,6 +119,12 @@ export default function WorkStack() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [autoPreviewIndex, setAutoPreviewIndex] = useState(0);
   const [mobileActiveSlug, setMobileActiveSlug] = useState(DEFAULT_SLUG);
+  const [scramble, setScramble] = useState<{
+    slug: string;
+    lines: string[];
+  } | null>(null);
+  const scrambleStopRef = useRef<(() => void) | null>(null);
+  const lastScrambleSlugRef = useRef<string | null>(null);
   const mobileItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const hoveredProject = hovered
     ? WORK_PROJECTS.find((project) => project.slug === hovered)
@@ -128,6 +135,37 @@ export default function WorkStack() {
   const autoPreviewSlug =
     AUTO_PREVIEW_PROJECTS[autoPreviewIndex]?.slug ?? DEFAULT_SLUG;
   const previewSlug = hoveredHasThumbnail ? hovered! : autoPreviewSlug;
+
+  const scrambleProjectTitle = useCallback((slug: string, lines: string[]) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    if (lastScrambleSlugRef.current === slug) return;
+    lastScrambleSlugRef.current = slug;
+    scrambleStopRef.current?.();
+    scrambleStopRef.current = runScrambleLines(
+      lines,
+      (nextLines) => {
+        setScramble({ slug, lines: nextLines });
+      },
+      () => {
+        scrambleStopRef.current = null;
+        setScramble((current) =>
+          current?.slug === slug ? null : current,
+        );
+      },
+    );
+  }, []);
+
+  const clearScrambleHover = useCallback(() => {
+    lastScrambleSlugRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    const project = WORK_PROJECTS.find((item) => item.slug === mobileActiveSlug);
+    if (!project) return;
+    scrambleProjectTitle(project.slug, project.lines);
+  }, [mobileActiveSlug, scrambleProjectTitle]);
 
   useEffect(() => {
     for (const project of WORK_PROJECTS) {
@@ -256,12 +294,18 @@ export default function WorkStack() {
           className="work-split-list flex flex-col gap-6 overflow-visible px-6 pb-10 pt-10 sm:gap-7 sm:px-10 sm:pt-16 md:px-12 md:pt-20 lg:gap-8 lg:pl-8 lg:pr-16 lg:pt-24 lg:pb-16 xl:pl-10 xl:pr-20"
           data-work-stack
           style={{ marginTop: STACK_MARGIN, marginBottom: STACK_MARGIN }}
-          onMouseLeave={() => setHovered(null)}
+          onMouseLeave={() => {
+            setHovered(null);
+            clearScrambleHover();
+          }}
         >
           {WORK_PROJECTS.map((project) => {
             const isActive = hovered === project.slug;
             const isDimmed = hasSelection && !isActive;
             const title = project.lines.join(" ");
+            const displayLines =
+              scramble?.slug === project.slug ? scramble.lines : project.lines;
+            const scrambling = scramble?.slug === project.slug;
 
             return (
               <Link
@@ -270,7 +314,10 @@ export default function WorkStack() {
                 data-work-item
                 className="group block w-full min-w-0 max-w-full touch-manipulation overflow-visible"
                 aria-label={`${title} — ${project.category}`}
-                onMouseEnter={() => setHovered(project.slug)}
+                onMouseEnter={() => {
+                  setHovered(project.slug);
+                  scrambleProjectTitle(project.slug, project.lines);
+                }}
                 onMouseLeave={handleItemLeave}
               >
                 <div
@@ -307,7 +354,11 @@ export default function WorkStack() {
                         transitionTimingFunction: EASE,
                       }}
                     >
-                      <WorkTitleText text={title} />
+                      {displayLines.map((line, lineIndex) => (
+                        <span key={`${project.slug}-${lineIndex}`} className="work-title-line">
+                          {scrambling ? line : <WorkTitleText text={line} />}
+                        </span>
+                      ))}
                     </h2>
                   </div>
 
@@ -338,6 +389,9 @@ export default function WorkStack() {
         {WORK_PROJECTS.map((project, index) => {
           const title = project.lines.join(" ");
           const isActive = mobileActiveSlug === project.slug;
+          const displayLines =
+            scramble?.slug === project.slug ? scramble.lines : project.lines;
+          const scrambling = scramble?.slug === project.slug;
 
           return (
             <Link
@@ -374,7 +428,14 @@ export default function WorkStack() {
                       transitionTimingFunction: EASE,
                     }}
                   >
-                    <WorkTitleText text={title} />
+                    {displayLines.map((line, lineIndex) => (
+                      <span
+                        key={`${project.slug}-m-${lineIndex}`}
+                        className="work-title-line"
+                      >
+                        {scrambling ? line : <WorkTitleText text={line} />}
+                      </span>
+                    ))}
                   </h2>
                   <p
                     className={`tracking-[0.08em] uppercase text-[11px] leading-snug sm:text-[12px] transition-colors ${

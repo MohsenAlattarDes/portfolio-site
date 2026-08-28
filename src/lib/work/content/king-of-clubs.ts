@@ -18,8 +18,8 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
     ],
     more: {
       heading: "STRATEGY",
-      closedLabel: "show me more +",
-      openLabel: "show less −",
+      closedLabel: "say more +",
+      openLabel: "say less −",
       blocks: [
         {
           heading: "RESEARCH",
@@ -79,7 +79,8 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
         },
         {
           paragraphs: [],
-          mediaLayout: "full",
+          mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
               src: "/work/king-of-clubs/matchday-kits.png",
@@ -91,7 +92,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               transparent: true,
               enlarge: true,
-              align: "center",
+              rowFit: "natural",
               glyphIntervalMs: 2200,
               heroCycleFadeMs: 0,
               heroCycleFit: "cover",
@@ -108,6 +109,22 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
                 {
                   src: "/work/king-of-clubs/grass-02.jpg",
                   alt: "Grass field texture",
+                },
+              ],
+            },
+            {
+              src: "/work/king-of-clubs/type-color-palette.mp4",
+              alt: "King of Clubs type motion — color palette",
+              caption: "Type motion — color palette.",
+              aspectRatio: "4332 / 6500",
+              kind: "video",
+              bare: true,
+              rowFit: "wide",
+              poster: "/work/king-of-clubs/type-color-palette-poster.jpg",
+              videoSources: [
+                {
+                  src: "/work/king-of-clubs/type-color-palette.mp4",
+                  type: "video/mp4",
                 },
               ],
             },
@@ -257,6 +274,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
+              phoneSolo: true,
             },
             {
               src: "/work/king-of-clubs/stadium-flag.png",
@@ -267,16 +285,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
-            },
-            {
-              src: "/work/king-of-clubs/stadium-flag-pole.png",
-              alt: "King of Clubs black stadium flag with volt crest",
-              caption: "Stadium flag.",
-              aspectRatio: "1024 / 819",
-              intrinsicSize: { width: 1024, height: 819 },
-              bare: true,
-              enlarge: true,
-              rowFit: "natural",
+              phoneSolo: true,
             },
           ],
         },
@@ -323,21 +332,23 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
           mediaLayout: "row",
           media: [
             {
-              src: "/work/king-of-clubs/type-born-to-shoot.mp4",
-              alt: "King of Clubs type motion — Born to Shoot",
-              caption: "Type motion — Born to Shoot.",
-              aspectRatio: "16 / 9",
-              kind: "video",
+              src: "/work/king-of-clubs/city-posters.jpg",
+              alt: "King of Clubs wheatpaste posters on a city wall",
+              caption: "Street posters.",
+              aspectRatio: "2 / 3",
+              intrinsicSize: { width: 1600, height: 2400 },
               bare: true,
-              rowFit: "wide",
-              poster: "/work/king-of-clubs/type-born-to-shoot-poster.jpg",
-              videoSources: [
-                {
-                  src: "/work/king-of-clubs/type-born-to-shoot.mp4",
-                  type: "video/mp4",
-                },
-              ],
+              enlarge: true,
+              rowFit: "cover",
+              rowAspectRatio: "1 / 1",
+              objectPosition: "center 68%",
             },
+          ],
+        },
+        {
+          paragraphs: [],
+          mediaLayout: "row",
+          media: [
             {
               src: "/work/king-of-clubs/type-goal.mp4",
               alt: "King of Clubs type motion — GOAL",
@@ -353,6 +364,38 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
                   type: "video/mp4",
                 },
               ],
+            },
+            {
+              src: "/work/king-of-clubs/type-born-to-shoot.mp4",
+              alt: "King of Clubs type motion — Born to Shoot",
+              caption: "Type motion — Born to Shoot.",
+              aspectRatio: "16 / 9",
+              kind: "video",
+              bare: true,
+              rowFit: "wide",
+              poster: "/work/king-of-clubs/type-born-to-shoot-poster.jpg",
+              videoSources: [
+                {
+                  src: "/work/king-of-clubs/type-born-to-shoot.mp4",
+                  type: "video/mp4",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          paragraphs: [],
+          mediaLayout: "row",
+          media: [
+            {
+              src: "/work/king-of-clubs/stadium-flag-pole.png",
+              alt: "King of Clubs black stadium flag with volt crest",
+              caption: "Stadium flag.",
+              aspectRatio: "1024 / 819",
+              intrinsicSize: { width: 1024, height: 819 },
+              bare: true,
+              enlarge: true,
+              rowFit: "wide",
             },
           ],
         },
@@ -416,7 +459,15 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
               bare: true,
               enlarge: true,
               rowFit: "natural",
+              phoneSolo: true,
             },
+          ],
+        },
+        {
+          paragraphs: [],
+          mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
+          media: [
             {
               src: "/work/king-of-clubs/street-banners.jpg",
               alt: "King of Clubs street light banners in volt and purple",
@@ -496,16 +547,6 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
                 },
               ],
             },
-            {
-              src: "/work/king-of-clubs/city-posters.jpg",
-              alt: "King of Clubs wheatpaste posters on a city wall",
-              caption: "Street posters.",
-              aspectRatio: "2 / 3",
-              intrinsicSize: { width: 1600, height: 2400 },
-              bare: true,
-              enlarge: true,
-              rowFit: "natural",
-            },
           ],
         },
       ],
@@ -533,6 +574,7 @@ export const kingOfClubsCaseStudy: ProjectCaseStudy = {
         {
           paragraphs: [],
           mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
               src: "/work/king-of-clubs/letterhead.jpg",

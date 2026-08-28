@@ -820,6 +820,10 @@ body:has(.nav-progress.is-pending) {
   overflow-wrap: anywhere;
 }
 
+.work-title-line {
+  display: block;
+}
+
 .work-split-visual {
   position: sticky;
   top: var(--work-visual-inset-block);
@@ -2215,7 +2219,7 @@ body:has(.nav-progress.is-pending) {
 }
 
 .work-case--king-of-clubs #city .work-case-media-row-wrap--sub {
-  margin-top: 1rem;
+  margin-top: var(--koc-media-gap, 0.35rem);
 }
 
 .work-case--king-of-clubs #city .work-case-media-row-wrap--sub .work-case-media-row {
@@ -2251,8 +2255,68 @@ body:has(.nav-progress.is-pending) {
 }
 
 .work-case--king-of-clubs .work-case-media-row--triptych {
-  gap: 0.875rem;
+  gap: var(--koc-media-gap, 0.35rem);
   filter: none;
+}
+
+/* KOC: hide captions; one gap between every stacked media block / in-row item. */
+.work-case--king-of-clubs {
+  --koc-media-gap: 0.35rem;
+  --koc-media-radius: 8px;
+}
+
+.work-case--king-of-clubs .work-case-caption,
+.work-case--king-of-clubs .work-case-row-caption {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+.work-case--king-of-clubs .work-case-media-frame,
+.work-case--king-of-clubs .work-case-hero,
+.work-case--king-of-clubs .work-case-hero-slot {
+  border-radius: var(--koc-media-radius);
+  overflow: hidden;
+}
+
+.work-case--king-of-clubs .work-case-media-enlarge {
+  border-radius: var(--koc-media-radius);
+}
+
+.work-case--king-of-clubs .work-case-split--full.work-case-split--sub,
+.work-case--king-of-clubs .work-case-media-row-wrap--sub,
+.work-case--king-of-clubs #city .work-case-media-row-wrap--sub {
+  margin-top: var(--koc-media-gap);
+}
+
+.work-case--king-of-clubs .work-case-media-row,
+.work-case--king-of-clubs .work-case-media-row--pair,
+.work-case--king-of-clubs .work-case-media-row--match-height,
+.work-case--king-of-clubs .work-case-media-row--match-height.work-case-media-row--triptych,
+.work-case--king-of-clubs .work-case-media-row--quad,
+.work-case--king-of-clubs .work-case-media-row--five,
+.work-case--king-of-clubs .work-case-media-row__phone-group {
+  gap: var(--koc-media-gap);
+  margin-top: 0;
+}
+
+.work-case--king-of-clubs .work-case-media-row-wrap--with-copy .work-case-media-row,
+.work-case--king-of-clubs .work-case-media-row-wrap--sub .work-case-media-row,
+.work-case--king-of-clubs #city .work-case-media-row-wrap--sub .work-case-media-row {
+  margin-top: 0;
+}
+
+/* First media row in a block (not a sub-wrap) still needs a top gap from prior content. */
+.work-case--king-of-clubs .work-case-media-row-wrap:not(.work-case-media-row-wrap--sub) {
+  margin-top: 0;
+}
+
+.work-case--king-of-clubs .work-case-media-row-wrap:not(.work-case-media-row-wrap--sub) > .work-case-media-row {
+  margin-top: var(--koc-media-gap);
+}
+
+.work-case--king-of-clubs .work-case-media-row-wrap--with-copy:not(.work-case-media-row-wrap--sub) > .work-case-media-row {
+  margin-top: 0;
 }
 
 .work-case--king-of-clubs .work-case-media-row--pair .work-case-figure--row-wide,
@@ -3360,6 +3424,15 @@ body:has(.nav-progress.is-pending) {
   flex: 0 0 calc(((100% - 3.5rem) / 5.874) * 1.874);
 }
 
+/* Solo wide/cover row: full flush across the content column. */
+.work-case-media-row > .work-case-figure--row-wide:only-child,
+.work-case-media-row__phone-group--solo:only-child,
+.work-case-media-row__phone-group--solo:only-child > .work-case-figure--row-wide {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: none;
+}
+
 .work-case-media-row--pair .work-case-figure--row-wide,
 .work-case-media-row--triptych .work-case-figure--row-wide,
 .work-case-media-row--quad .work-case-figure--row-wide,
@@ -3581,7 +3654,25 @@ body:has(.nav-progress.is-pending) {
   }
 
   .work-case--king-of-clubs .work-case-media-row--triptych {
-    gap: 0.4rem;
+    gap: var(--koc-media-gap, 0.35rem);
+  }
+
+  /* King of Clubs phone: keep page rhythm; media gaps use --koc-media-gap. */
+  .work-case--king-of-clubs .work-case-section {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .work-case--king-of-clubs .work-case-hero {
+    margin-bottom: 1rem;
+  }
+
+  .work-case--king-of-clubs .work-case-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .work-case--king-of-clubs #city {
+    padding-top: 0.85rem;
   }
 
   .work-case-media-row--triptych .work-case-figure {
@@ -3869,6 +3960,7 @@ body:has(.nav-progress.is-pending) {
   font-size: 0.75rem;
   line-height: 18px;
   color: var(--fg-muted);
+  white-space: pre-line;
 }
 
 .work-case-show-more {
