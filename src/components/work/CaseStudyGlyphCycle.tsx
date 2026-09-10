@@ -1,9 +1,13 @@
 import AnoraGlyphCycle from "@/components/work/AnoraGlyphCycle";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { ProjectMedia } from "@/lib/work/types";
 
 export default function CaseStudyGlyphCycle({ item }: { item: ProjectMedia }) {
   return (
-    <figure className="work-case-figure work-case-figure--glyph-cycle">
+    <figure
+      {...cursorCaptionProps(item.caption)}
+      className="work-case-figure work-case-figure--glyph-cycle"
+    >
       <AnoraGlyphCycle
         glyphs={item.glyphs}
         excludeGlyphs={item.glyphExclude}

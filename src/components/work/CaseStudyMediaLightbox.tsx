@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTheme } from "@/components/ThemeProvider";
+import { startSmoothScroll, stopSmoothScroll } from "@/lib/smooth-scroll";
 
 export default function CaseStudyMediaLightbox({
   src,
@@ -40,10 +41,14 @@ export default function CaseStudyMediaLightbox({
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("lightbox-open");
+    stopSmoothScroll();
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.documentElement.classList.remove("lightbox-open");
+      startSmoothScroll();
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);

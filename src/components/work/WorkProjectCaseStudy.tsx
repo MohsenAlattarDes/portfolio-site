@@ -18,6 +18,7 @@ import CaseStudyLoopVideo from "@/components/work/CaseStudyLoopVideo";
 import CaseStudyMediaLightbox from "@/components/work/CaseStudyMediaLightbox";
 import CaseStudyThemeImage from "@/components/work/CaseStudyThemeImage";
 import ScrollReveal from "@/components/work/ScrollReveal";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import { PLACEHOLDER_THUMBNAIL } from "@/lib/work/projects";
 import type { WorkProject } from "@/lib/work/projects";
 import type {
@@ -161,6 +162,7 @@ function CaseStudyHeroSlot({ item }: { item: ProjectMedia }) {
 
   return (
     <figure
+      {...cursorCaptionProps(item.caption)}
       className="work-case-figure work-case-figure--hero-slot"
       style={item.spacingTop ? { marginTop: item.spacingTop } : undefined}
     >
@@ -247,6 +249,7 @@ function CaseStudyMedia({
     const aspect = mediaAspectValue(item);
     return (
       <figure
+        {...cursorCaptionProps(item.caption)}
         className="work-case-figure"
         style={{
           ...(inRow ? { ["--media-aspect" as string]: aspect } : {}),
@@ -485,6 +488,7 @@ function CaseStudyMedia({
 
   return (
     <figure
+      {...cursorCaptionProps(item.caption)}
       className={`work-case-figure${rowNatural ? " work-case-figure--row-natural" : ""}${rowContain ? " work-case-figure--row-contain" : ""}${rowWide || rowCover ? " work-case-figure--row-wide" : ""}`}
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >
@@ -667,6 +671,7 @@ function CaseStudyBlock({
     return (
       <ScrollReveal>
         <div
+          {...cursorCaptionProps(rowCaption)}
           className={`work-case-media-row-wrap${mediaRowAfterCopy ? " work-case-media-row-wrap--with-copy" : ""}${subBlock ? " work-case-media-row-wrap--sub" : ""}`}
         >
           {mediaRowAfterCopy ? (
@@ -729,7 +734,7 @@ function CaseStudyBlock({
           />
         ) : null}
         {!detachCopyMedia && copyMedia.length > 0 ? (
-          <div className="work-case-copy-media-wrap">
+          <div {...cursorCaptionProps(rowCaption)} className="work-case-copy-media-wrap">
             <div className="work-case-media-row work-case-media-row--pair work-case-copy-media-row">
               {copyMedia.map((item) => (
                 <CaseStudyMedia
@@ -788,7 +793,7 @@ function CaseStudyBlock({
         </div>
       ) : null}
       {detachCopyMedia ? (
-        <div className="work-case-copy-media-wrap">
+        <div {...cursorCaptionProps(rowCaption)} className="work-case-copy-media-wrap">
           <div className="work-case-media-row work-case-media-row--pair work-case-copy-media-row">
             {copyMedia.map((item) => (
               <CaseStudyMedia
@@ -888,7 +893,10 @@ export default function WorkProjectCaseStudy({
   return (
     <article className={`work-case work-case--${content.slug}`}>
       <header className="work-case-header">
-        <h1 className="work-case-title" style={{ fontFamily: displayFont }}>
+        <h1
+          className={`work-case-title${project.mobileSingleLine ? " work-case-title--single-line" : ""}`}
+          style={{ fontFamily: displayFont }}
+        >
           {project.lines.map((line, index) => (
             <span key={line}>
               {index > 0 ? (
@@ -909,6 +917,7 @@ export default function WorkProjectCaseStudy({
 
       {showHero ? (
         <div
+          {...cursorCaptionProps(content.hero?.caption)}
           className={`work-case-hero relative w-full${
             isHeroCycleMedia(content.hero!) && content.hero!.heroStickers?.length
               ? " work-case-hero--stickers"

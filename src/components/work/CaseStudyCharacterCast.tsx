@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTheme } from "@/components/ThemeProvider";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { PublicationSpread } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
@@ -83,7 +84,10 @@ export default function CaseStudyCharacterCast({
   const name = castName(active);
 
   return (
-    <figure className="work-case-figure work-case-cast">
+    <figure
+      {...cursorCaptionProps(caption)}
+      className="work-case-figure work-case-cast"
+    >
       <div className="work-case-cast-stage" aria-live="polite">
         {leaving && !reducedMotion ? (
           <div

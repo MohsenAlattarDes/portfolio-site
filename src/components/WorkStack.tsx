@@ -7,6 +7,7 @@ import { runScrambleLines } from "@/components/ScrambleText";
 import WorkProjectThumbnail from "@/components/work/WorkProjectThumbnail";
 import WorkTitleText from "@/components/WorkTitleText";
 import {
+  getMobileWorkTitleLines,
   hasProjectThumbnail,
   WORK_PROJECTS,
 } from "@/lib/work/projects";
@@ -164,7 +165,7 @@ export default function WorkStack() {
   useEffect(() => {
     const project = WORK_PROJECTS.find((item) => item.slug === mobileActiveSlug);
     if (!project) return;
-    scrambleProjectTitle(project.slug, project.lines);
+    scrambleProjectTitle(project.slug, getMobileWorkTitleLines(project));
   }, [mobileActiveSlug, scrambleProjectTitle]);
 
   useEffect(() => {
@@ -389,8 +390,9 @@ export default function WorkStack() {
         {WORK_PROJECTS.map((project, index) => {
           const title = project.lines.join(" ");
           const isActive = mobileActiveSlug === project.slug;
+          const stackLines = getMobileWorkTitleLines(project);
           const displayLines =
-            scramble?.slug === project.slug ? scramble.lines : project.lines;
+            scramble?.slug === project.slug ? scramble.lines : stackLines;
           const scrambling = scramble?.slug === project.slug;
 
           return (
@@ -417,7 +419,11 @@ export default function WorkStack() {
                 <MobilePreview project={project} playing={isActive} />
                 <div className="work-mobile-copy">
                   <h2
-                    className={`work-mobile-title uppercase text-[44px] leading-[0.88] sm:text-[52px] md:text-[64px] transition-colors ${
+                    className={`work-mobile-title uppercase text-[44px] leading-[0.88] sm:text-[52px] md:text-[64px] transition-colors${
+                      project.mobileSingleLine
+                        ? " work-mobile-title--single-line"
+                        : ""
+                    } ${
                       isActive ? "text-[var(--red)]" : "text-[var(--hover)]"
                     }`}
                     style={{

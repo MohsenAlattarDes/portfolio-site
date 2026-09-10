@@ -6,6 +6,7 @@ import {
   CaseStudyCodeControls,
 } from "@/components/work/CaseStudyCodeEmbed";
 import type { ProjectMedia } from "@/lib/work/types";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { AnoraStackSpeed } from "@/lib/work/anora/processStackConfig";
 import { useInView } from "@/lib/useInView";
 
@@ -81,6 +82,7 @@ export default function CaseStudyCodeFigure({ item }: { item: ProjectMedia }) {
   return (
     <figure
       ref={figureRef}
+      {...cursorCaptionProps(item.caption)}
       className="work-case-figure work-case-figure--code"
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >

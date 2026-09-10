@@ -213,7 +213,11 @@ export default function CaseStudyCodeWindow({
       <div className="work-case-code-window__tabs">
         <span className="work-case-code-window__tab">{title}</span>
       </div>
-      <div ref={viewportRef} className="work-case-code-window__body">
+      <div
+        ref={viewportRef}
+        className="work-case-code-window__body"
+        data-lenis-prevent
+      >
         <div ref={contentRef} className="work-case-code-window__lines">
           {lines.map((line, lineIndex) => (
             <div className="work-case-code-window__line" key={lineIndex}>

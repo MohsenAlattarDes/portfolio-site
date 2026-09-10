@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { PublicationSpread } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
@@ -27,7 +28,10 @@ export default function CaseStudyScatteredStack({
   if (items.length === 0) return null;
 
   return (
-    <figure className="work-case-figure work-case-scattered">
+    <figure
+      {...cursorCaptionProps(caption)}
+      className="work-case-figure work-case-scattered"
+    >
       <div className="work-case-scattered-stage" aria-hidden={false}>
         {items.map((item, index) => {
           const layout = SCATTER_LAYOUT[index % SCATTER_LAYOUT.length]!;

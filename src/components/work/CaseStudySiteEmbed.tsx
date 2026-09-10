@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 
 const secondaryFont = "var(--font-secondary)";
 /** Zoom only the iframe preview; the window box stays the same size. */
@@ -321,7 +322,10 @@ export default function CaseStudySiteEmbed({
       : hostname;
 
   return (
-    <figure className="work-case-figure work-case-site-embed">
+    <figure
+      {...cursorCaptionProps(caption)}
+      className="work-case-figure work-case-site-embed"
+    >
       <div className="work-case-site-embed__window">
         <div className="work-case-site-embed__chrome">
           <div className="work-case-site-embed__dots" aria-hidden>

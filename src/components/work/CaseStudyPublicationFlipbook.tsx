@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useInView } from "@/lib/useInView";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { PublicationSpread } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
@@ -190,7 +191,10 @@ export default function CaseStudyPublicationFlipbook({
   }, [index, views]);
 
   return (
-    <figure className="work-case-figure work-case-figure--flipbook">
+    <figure
+      {...cursorCaptionProps(caption)}
+      className="work-case-figure work-case-figure--flipbook"
+    >
       <div
         ref={inViewRef}
         className={`work-case-flipbook${hintPulse ? " work-case-flipbook--hint" : ""}`}

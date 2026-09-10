@@ -155,6 +155,7 @@ export default function ThemeProvider({
 
     setWipeTarget(next);
     setWipePhase("covering");
+    document.documentElement.classList.add("theme-wiping");
     applyChromeColor("#ff0000");
 
     coverTimer.current = window.setTimeout(() => {
@@ -165,6 +166,7 @@ export default function ThemeProvider({
 
       revealTimer.current = window.setTimeout(() => {
         setWipePhase("idle");
+        document.documentElement.classList.remove("theme-wiping");
         syncChromeToTheme(next);
       }, MODE_WIPE_REVEAL_MS);
     }, MODE_WIPE_COVER_MS);

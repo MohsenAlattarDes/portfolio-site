@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CaseStudyLoopVideo from "@/components/work/CaseStudyLoopVideo";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { ProjectMedia } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
@@ -32,6 +33,7 @@ export default function CaseStudyVideoSpeed({ item }: { item: ProjectMedia }) {
 
   return (
     <figure
+      {...cursorCaptionProps(item.caption)}
       className="work-case-figure"
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >

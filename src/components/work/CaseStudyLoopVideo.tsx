@@ -28,10 +28,19 @@ export default function CaseStudyLoopVideo({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    video.load();
+  }, [sourceKey]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
     video.playbackRate = rate;
     video.muted = true;
+    video.defaultMuted = true;
     video.loop = true;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
 
     const play = () => {
       if (video.paused) {
@@ -47,19 +56,16 @@ export default function CaseStudyLoopVideo({
       return;
     }
 
-    video.preload = "auto";
-    if (video.readyState === 0) {
-      video.load();
-    }
-
     play();
     video.addEventListener("loadeddata", play);
     video.addEventListener("canplay", play);
+    video.addEventListener("canplaythrough", play);
     video.addEventListener("playing", onPlaying);
 
     return () => {
       video.removeEventListener("loadeddata", play);
       video.removeEventListener("canplay", play);
+      video.removeEventListener("canplaythrough", play);
       video.removeEventListener("playing", onPlaying);
     };
   }, [inView, item.poster, rate, sourceKey]);
@@ -82,7 +88,7 @@ export default function CaseStudyLoopVideo({
         loop
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
         poster={item.poster}
         aria-label={item.alt}
         className={`${className}${showPoster ? " opacity-0" : " opacity-100"}`}
