@@ -82,12 +82,12 @@ export default function CaseStudyCodeFigure({ item }: { item: ProjectMedia }) {
   return (
     <figure
       ref={figureRef}
-      {...cursorCaptionProps(item.caption)}
       className="work-case-figure work-case-figure--code"
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >
       <div
         ref={ref}
+        {...cursorCaptionProps(item.caption)}
         className="work-case-media-frame work-case-media-frame--code relative flex w-full overflow-hidden"
         style={{ aspectRatio: ratio }}
       >

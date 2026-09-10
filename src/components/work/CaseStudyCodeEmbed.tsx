@@ -32,6 +32,7 @@ export function CaseStudyCodeControls({
   return (
     <div
       className="work-case-code-controls"
+      data-cursor-native=""
       role="group"
       aria-label="Stack animation speed"
     >

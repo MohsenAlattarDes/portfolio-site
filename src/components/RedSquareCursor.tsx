@@ -7,14 +7,50 @@ import { onSmoothScroll } from "@/lib/smooth-scroll";
 
 const DESKTOP_MQ = "(min-width: 62rem)";
 const INTRO_SEEN_KEY = "site-intro-seen";
+const NATIVE_CURSOR_SELECTOR =
+  "[data-cursor-native], .work-case-code-controls, .work-case-video-controls, .work-case-code-control";
 
 function isEnlargeTarget(target: Element | null): boolean {
   if (!target) return false;
   return target.closest(".work-case-media-enlarge") !== null;
 }
 
-function captionFromTarget(target: Element | null): string {
-  if (!target) return "";
+function isCursorOverlay(el: Element): boolean {
+  return el.closest(".cursor-ring, .cursor-sketch") !== null;
+}
+
+function hitTargetFromPoint(x: number, y: number): Element | null {
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (!isCursorOverlay(el)) return el;
+  }
+  return null;
+}
+
+function pointInRect(x: number, y: number, rect: DOMRectReadOnly): boolean {
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function isPointOverNativeCursor(
+  x: number,
+  y: number,
+  target: Element | null,
+): boolean {
+  if (target?.closest(NATIVE_CURSOR_SELECTOR)) return true;
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (el.closest(NATIVE_CURSOR_SELECTOR)) return true;
+  }
+  for (const node of document.querySelectorAll(NATIVE_CURSOR_SELECTOR)) {
+    if (pointInRect(x, y, node.getBoundingClientRect())) return true;
+  }
+  return false;
+}
+
+function captionFromTarget(
+  target: Element | null,
+  nativeCursor: boolean,
+): string {
+  if (!target || nativeCursor) return "";
+  if (target.closest(NATIVE_CURSOR_SELECTOR)) return "";
   const host = target.closest("[data-cursor-caption]");
   if (!host || !host.closest(".work-case")) return "";
   if (document.documentElement.classList.contains("lightbox-open")) return "";
@@ -100,6 +136,12 @@ export default function RedSquareCursor() {
       ring.style.opacity = hidden ? "0" : "1";
     };
 
+    const setSystemCursor = (native: boolean) => {
+      const root = document.documentElement;
+      if (native) root.dataset.systemCursor = "true";
+      else delete root.dataset.systemCursor;
+    };
+
     const setOverLink = (next: boolean) => {
       if (overLinkRef.current === next) return;
       overLinkRef.current = next;
@@ -137,18 +179,20 @@ export default function RedSquareCursor() {
     };
 
     const syncFromPoint = (x: number, y: number) => {
-      const target = document.elementFromPoint(x, y);
+      const target = hitTargetFromPoint(x, y);
       const overLetterSplash =
         target?.closest("[data-letter-splash]") !== null;
       const overSiteEmbed =
         target?.closest(".work-case-site-embed__viewport") !== null;
-      const hide = overLetterSplash || overSiteEmbed;
+      const overNativeCursor = isPointOverNativeCursor(x, y, target);
+      const hide = overLetterSplash || overSiteEmbed || overNativeCursor;
 
       setHidden(hide);
+      setSystemCursor(overNativeCursor);
       setOverLink(
         !hide && isClickableTarget(target) && !isEnlargeTarget(target),
       );
-      setCaption(hide ? "" : captionFromTarget(target));
+      setCaption(hide ? "" : captionFromTarget(target, overNativeCursor));
     };
 
     const onMove = (e: PointerEvent) => {
@@ -182,6 +226,7 @@ export default function RedSquareCursor() {
         return;
       }
       setHidden(true);
+      setSystemCursor(false);
       setOverLink(false);
       setCaption("");
     };
@@ -200,6 +245,7 @@ export default function RedSquareCursor() {
       siteMain?.removeEventListener("scroll", onScroll);
       stopSmoothScrollListen();
       window.clearTimeout(closeTimerRef.current);
+      delete document.documentElement.dataset.systemCursor;
     };
   }, [active, introComplete]);
 

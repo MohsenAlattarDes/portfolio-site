@@ -613,6 +613,19 @@ html.theme-wiping body::before {
   *::after {
     cursor: none !important;
   }
+
+  [data-cursor-native],
+  [data-cursor-native] *,
+  [data-cursor-native]::before,
+  [data-cursor-native]::after,
+  [data-cursor-native] *::before,
+  [data-cursor-native] *::after,
+  html[data-system-cursor="true"],
+  html[data-system-cursor="true"] *,
+  html[data-system-cursor="true"] *::before,
+  html[data-system-cursor="true"] *::after {
+    cursor: pointer !important;
+  }
 }
 
 .cursor-sketch {
@@ -2524,6 +2537,26 @@ body:has(.nav-progress.is-pending) {
   box-sizing: border-box;
 }
 
+/* Mixed-aspect five-up: flex widths follow image ratio so heights match. */
+.work-case-media-row--match-height.work-case-media-row--five,
+.work-case-media-row--match-height.work-case-media-row--quad {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.work-case-media-row--match-height.work-case-media-row--five .work-case-figure,
+.work-case-media-row--match-height.work-case-media-row--five .work-case-figure--row-wide,
+.work-case-media-row--match-height.work-case-media-row--quad .work-case-figure,
+.work-case-media-row--match-height.work-case-media-row--quad .work-case-figure--row-wide {
+  flex-grow: var(--media-aspect, 1);
+  flex-shrink: 1;
+  flex-basis: 0%;
+  width: auto;
+  max-width: none;
+}
+
 .work-case-media-row--grid-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3808,6 +3841,22 @@ body:has(.nav-progress.is-pending) {
     max-width: calc(50% - 0.2rem);
   }
 
+  /* Copy-column merch grid is already 2 columns — don't halve cells again. */
+  .work-case-copy-media-row .work-case-figure {
+    flex: none;
+    max-width: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .work-case-copy-media-row .work-case-media-enlarge,
+  .work-case-copy-media-row .work-case-media-frame,
+  .work-case-copy-media-row .work-case-figure img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
   .work-case-media-row .work-case-figure--row-wide {
     flex: 1 1 100%;
     max-width: 100%;
@@ -3898,6 +3947,12 @@ body:has(.nav-progress.is-pending) {
     gap: 0.4rem;
     width: 100%;
     max-width: 100%;
+  }
+
+  .work-case-media-row--match-height.work-case-media-row--five,
+  .work-case-media-row--match-height.work-case-media-row--quad {
+    display: flex;
+    flex-wrap: wrap;
   }
 
   .work-case-media-row--grid-3 {
@@ -4039,6 +4094,10 @@ body:has(.nav-progress.is-pending) {
   background: transparent;
 }
 
+.work-case-figure--code {
+  isolation: isolate;
+}
+
 .work-case-code-controls {
   display: flex;
   justify-content: flex-start;
@@ -4047,7 +4106,8 @@ body:has(.nav-progress.is-pending) {
   padding: 0.25rem 0 0;
   background: transparent;
   position: relative;
-  z-index: 1;
+  z-index: 6;
+  pointer-events: auto;
 }
 
 .work-case-caption--code {
@@ -4060,6 +4120,9 @@ body:has(.nav-progress.is-pending) {
   gap: 0.375rem;
   margin-top: 0.75rem;
   background: transparent;
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
 }
 
 .work-case-caption-key {
@@ -4096,6 +4159,9 @@ body:has(.nav-progress.is-pending) {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
   transition:
     color 0.15s ease,
     border-color 0.15s ease,

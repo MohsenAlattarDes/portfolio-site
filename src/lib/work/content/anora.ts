@@ -84,6 +84,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
         {
           paragraphs: [],
           mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
               src: "/work/anora/process-fraktur-reference.png",

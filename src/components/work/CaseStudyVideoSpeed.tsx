@@ -33,11 +33,11 @@ export default function CaseStudyVideoSpeed({ item }: { item: ProjectMedia }) {
 
   return (
     <figure
-      {...cursorCaptionProps(item.caption)}
       className="work-case-figure"
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >
       <div
+        {...cursorCaptionProps(item.caption)}
         className={`work-case-media-frame relative w-full${item.transparent ? " work-case-media-frame--transparent" : ""}${item.paperShadow ? " work-case-media-frame--paper-scan" : ""}${item.bare ? "" : " work-grey-box"}`}
         style={{ aspectRatio: item.aspectRatio ?? "4 / 3" }}
       >
@@ -49,6 +49,7 @@ export default function CaseStudyVideoSpeed({ item }: { item: ProjectMedia }) {
       </div>
       <div
         className="work-case-video-controls"
+        data-cursor-native=""
         role="group"
         aria-label="Playback speed"
       >
