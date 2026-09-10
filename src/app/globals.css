@@ -1589,8 +1589,17 @@ body:has(.nav-progress.is-pending) {
 }
 
 .work-case-figure--glyph-cycle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin: 0;
   width: 100%;
+  min-height: clamp(242px, 37.4vw, 572px);
+}
+
+.work-case-figure--glyph-cycle .work-case-caption {
+  text-align: center;
 }
 
 .anora-glyph-cycle {
@@ -1598,19 +1607,18 @@ body:has(.nav-progress.is-pending) {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: clamp(242px, 37.4vw, 572px);
   overflow: hidden;
 }
 
 .anora-glyph-cycle__glyph {
   display: block;
-  font-family: "Anora Black", serif;
-  font-size: clamp(7.7rem, 22vw, 17.6rem);
-  font-weight: 900;
-  line-height: 0.82;
-  letter-spacing: -0.04em;
-  text-align: center;
-  color: var(--red);
+  width: clamp(7.7rem, 22vw, 17.6rem);
+  height: auto;
+  aspect-ratio: 1131 / 1150;
+  max-width: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 @media (min-width: 62rem) {
@@ -1637,7 +1645,7 @@ body:has(.nav-progress.is-pending) {
     align-items: start;
   }
 
-  .anora-glyph-cycle {
+  .work-case-figure--glyph-cycle {
     min-height: clamp(308px, 41.8vw, 616px);
   }
 }

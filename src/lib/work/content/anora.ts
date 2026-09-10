@@ -24,7 +24,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
       {
         src: "",
         alt: "Anora typeface glyph cycle",
-        caption: "",
+        caption: "Anora character set.",
         kind: "glyph-cycle",
         glyphExclude: ["H", "Y", "J", "h", "y", "j"],
         glyphIntervalMs: 1800,

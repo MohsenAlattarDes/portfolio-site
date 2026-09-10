@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+const DEFAULT_EXCLUDE = ["H", "Y", "J", "h", "y", "j"];
+
 function buildGlyphPool(exclude: string[]) {
   const excluded = new Set(exclude);
   const pool: string[] = [];
@@ -19,6 +21,11 @@ function buildGlyphPool(exclude: string[]) {
   return pool;
 }
 
+function glyphSrc(glyph: string) {
+  const name = glyph === glyph.toUpperCase() ? `uc-${glyph}` : `lc-${glyph}`;
+  return `/work/anora/glyphs/${name}.webp`;
+}
+
 function pickRandomGlyph(pool: string[], current?: string) {
   if (pool.length === 0) return "";
   if (pool.length === 1) return pool[0];
@@ -33,20 +40,28 @@ function pickRandomGlyph(pool: string[], current?: string) {
 
 export default function AnoraGlyphCycle({
   glyphs,
-  excludeGlyphs = ["H", "Y", "J", "h", "y", "j"],
+  excludeGlyphs = DEFAULT_EXCLUDE,
   intervalMs = 1800,
 }: {
   glyphs?: string[];
   excludeGlyphs?: string[];
   intervalMs?: number;
 }) {
+  const excludeKey = excludeGlyphs.join("");
   const pool = useMemo(
     () => glyphs ?? buildGlyphPool(excludeGlyphs),
-    [glyphs, excludeGlyphs],
+    [glyphs, excludeGlyphs, excludeKey],
   );
 
   const [glyph, setGlyph] = useState(() => pool[0] ?? "A");
   const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    pool.forEach((item) => {
+      const image = new window.Image();
+      image.src = glyphSrc(item);
+    });
+  }, [pool]);
 
   useEffect(() => {
     setActive(true);
@@ -65,7 +80,16 @@ export default function AnoraGlyphCycle({
 
   return (
     <div className="anora-glyph-cycle" aria-hidden="true">
-      <span className="anora-glyph-cycle__glyph">{glyph}</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={glyphSrc(glyph)}
+        alt=""
+        className="anora-glyph-cycle__glyph"
+        width={1131}
+        height={1150}
+        decoding="async"
+        draggable={false}
+      />
     </div>
   );
 }
