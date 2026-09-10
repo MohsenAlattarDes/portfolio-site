@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 
 const secondaryFont = "var(--font-secondary)";
 
@@ -160,7 +161,7 @@ export default function CaseStudyInterfaceKit({
   const [activeSwatch, setActiveSwatch] = useState<string | null>(null);
 
   return (
-    <figure className="work-case-interface">
+    <figure {...cursorCaptionProps(caption)} className="work-case-interface">
       <div className="work-case-interface__stage">
         <div className="work-case-interface__hero">
           <div className="work-case-interface__toolbar" role="group" aria-label="Drawing tools">

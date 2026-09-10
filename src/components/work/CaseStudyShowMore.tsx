@@ -14,8 +14,8 @@ export type CaseStudyShowMoreBlock = {
 export default function CaseStudyShowMore({
   heading,
   blocks,
-  closedLabel = "show me more +",
-  openLabel = "show less −",
+  closedLabel = "say more +",
+  openLabel = "say less −",
 }: {
   heading?: string;
   blocks: CaseStudyShowMoreBlock[];

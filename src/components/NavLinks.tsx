@@ -9,6 +9,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import ScrambleText from "@/components/ScrambleText";
 
 const LINKS = [
   { href: "/", label: "HOME" },
@@ -16,76 +17,11 @@ const LINKS = [
   { href: "/about", label: "ABOUT" },
 ] as const;
 
-const SCRAMBLE_CHARS = "01<>{}[]_/|\\ABCDEF#$%&*+=";
-const SCRAMBLE_FRAMES = 9;
-const SCRAMBLE_MS = 32;
 const PROMPT_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
 
 function isLinkActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function ScrambleLabel({
-  label,
-  isActive,
-  className,
-  style,
-}: {
-  label: string;
-  isActive: boolean;
-  className?: string;
-  style?: CSSProperties;
-}) {
-  const [text, setText] = useState(label);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
-    if (!isActive || reducedMotion) {
-      setText(label);
-      return;
-    }
-
-    let frame = 0;
-    const id = window.setInterval(() => {
-      frame += 1;
-      if (frame >= SCRAMBLE_FRAMES) {
-        setText(label);
-        window.clearInterval(id);
-        return;
-      }
-
-      const reveal = Math.floor((frame / SCRAMBLE_FRAMES) * label.length);
-      setText(
-        label
-          .split("")
-          .map((char, index) =>
-            index < reveal
-              ? char
-              : SCRAMBLE_CHARS[
-                  Math.floor(Math.random() * SCRAMBLE_CHARS.length)
-                ],
-          )
-          .join(""),
-      );
-    }, SCRAMBLE_MS);
-
-    return () => window.clearInterval(id);
-  }, [isActive, label, reducedMotion]);
-
-  return (
-    <span className={className} style={style}>
-      {text}
-    </span>
-  );
 }
 
 type NavLinksProps = {
@@ -235,7 +171,7 @@ export default function NavLinks({
                 fontWeight: isActive ? 900 : 400,
               }}
             >
-              <ScrambleLabel label={label} isActive={isActive} />
+              <ScrambleText text={label} active={isActive} />
             </span>
           </Link>
         );

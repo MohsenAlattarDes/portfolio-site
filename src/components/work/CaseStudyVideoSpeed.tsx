@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CaseStudyLoopVideo from "@/components/work/CaseStudyLoopVideo";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { ProjectMedia } from "@/lib/work/types";
 
 const secondaryFont = "var(--font-secondary)";
@@ -36,6 +37,7 @@ export default function CaseStudyVideoSpeed({ item }: { item: ProjectMedia }) {
       style={Object.keys(figureStyle).length > 0 ? figureStyle : undefined}
     >
       <div
+        {...cursorCaptionProps(item.caption)}
         className={`work-case-media-frame relative w-full${item.transparent ? " work-case-media-frame--transparent" : ""}${item.paperShadow ? " work-case-media-frame--paper-scan" : ""}${item.bare ? "" : " work-grey-box"}`}
         style={{ aspectRatio: item.aspectRatio ?? "4 / 3" }}
       >
@@ -47,6 +49,7 @@ export default function CaseStudyVideoSpeed({ item }: { item: ProjectMedia }) {
       </div>
       <div
         className="work-case-video-controls"
+        data-cursor-native=""
         role="group"
         aria-label="Playback speed"
       >

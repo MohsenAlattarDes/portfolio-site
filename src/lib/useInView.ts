@@ -13,9 +13,17 @@ export function useInView<T extends Element>(
     const node = ref.current;
     if (!node) return;
 
+    const scrollRoot = document.querySelector<HTMLElement>(".site-main");
+    const root =
+      scrollRoot &&
+      scrollRoot.contains(node) &&
+      scrollRoot.scrollHeight > scrollRoot.clientHeight
+        ? scrollRoot
+        : null;
+
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin, threshold },
+      { root, rootMargin, threshold },
     );
 
     observer.observe(node);

@@ -15,6 +15,8 @@ export type WorkProject = {
   thumbnailMotion?: "pan-x";
   /** Scale factor for pan-x thumbs (>1 zooms into the subject). */
   thumbnailPanZoom?: number;
+  /** Keep the title on one line in the mobile work stack. */
+  mobileSingleLine?: boolean;
 };
 
 export function hasProjectThumbnail(thumbnail: string) {
@@ -23,6 +25,13 @@ export function hasProjectThumbnail(thumbnail: string) {
 
 export function isVideoThumbnail(thumbnail: string) {
   return /\.(mov|mp4|webm)$/i.test(thumbnail);
+}
+
+export function getMobileWorkTitleLines(project: WorkProject) {
+  if (project.mobileSingleLine) {
+    return [project.lines.join(" ")];
+  }
+  return project.lines;
 }
 
 export const WORK_PROJECTS: WorkProject[] = [
@@ -44,7 +53,8 @@ export const WORK_PROJECTS: WorkProject[] = [
   {
     slug: "king-of-clubs",
     lines: ["KING OF", "CLUBS"],
-    category: "Branding + Motion",
+    mobileSingleLine: true,
+    category: "Branding + Motion + Strategy",
     thumbnail: "/work/king-of-clubs/type-arrows-v2.mp4",
     thumbnailPoster: "/work/king-of-clubs/type-arrows-v2-poster.jpg",
     thumbnailVideoSources: [
@@ -102,6 +112,7 @@ export const WORK_PROJECTS: WorkProject[] = [
   {
     slug: "juju-soda",
     lines: ["JUJU", "SODA"],
+    mobileSingleLine: true,
     category: "Packaging Design",
     thumbnail: "/work/juju-soda/hero.jpg",
     thumbnailMotion: "pan-x",

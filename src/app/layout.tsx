@@ -4,6 +4,7 @@ import "./globals.css";
 import RedSquareCursor from "@/components/RedSquareCursor";
 import LoadingScreen from "@/components/LoadingScreen";
 import NavigationProgress from "@/components/NavigationProgress";
+import SmoothScroll from "@/components/SmoothScroll";
 import SideNav from "@/components/SideNav";
 import ThemeProvider from "@/components/ThemeProvider";
 import TopNav from "@/components/TopNav";
@@ -54,6 +55,7 @@ export default async function RootLayout({
       >
         <ThemeProvider initialTheme={initialTheme}>
           <LoadingScreen />
+          <SmoothScroll />
           <NavigationProgress />
           <SideNav />
           <div className="site-main relative z-[2] flex-1 min-w-0 flex flex-col text-[var(--fg)] select-text">

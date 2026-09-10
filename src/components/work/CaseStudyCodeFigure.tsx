@@ -6,6 +6,7 @@ import {
   CaseStudyCodeControls,
 } from "@/components/work/CaseStudyCodeEmbed";
 import type { ProjectMedia } from "@/lib/work/types";
+import { cursorCaptionProps } from "@/lib/work/cursor-caption";
 import type { AnoraStackSpeed } from "@/lib/work/anora/processStackConfig";
 import { useInView } from "@/lib/useInView";
 
@@ -86,6 +87,7 @@ export default function CaseStudyCodeFigure({ item }: { item: ProjectMedia }) {
     >
       <div
         ref={ref}
+        {...cursorCaptionProps(item.caption)}
         className="work-case-media-frame work-case-media-frame--code relative flex w-full overflow-hidden"
         style={{ aspectRatio: ratio }}
       >

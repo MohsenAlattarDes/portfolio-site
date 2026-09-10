@@ -84,6 +84,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
         {
           paragraphs: [],
           mediaLayout: "row",
+          mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
               src: "/work/anora/process-fraktur-reference.png",
@@ -194,5 +195,5 @@ export const anoraCaseStudy: ProjectCaseStudy = {
     },
   ],
   footerNote:
-    "*Recognized by the ArtCenter Gallery and Lithographix Gallery.*",
+    "*Recognized by ECAL A Typographic Atlas.\n*Recognized by the Lithographix Gallery.\n*Recognized by the ArtCenter Gallery.*",
 };

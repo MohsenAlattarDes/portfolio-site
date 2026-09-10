@@ -111,8 +111,7 @@ export const kuwaitsCakePicnicCaseStudy: ProjectCaseStudy = {
               intrinsicSize: { width: 682, height: 1024 },
               bare: true,
               enlarge: true,
-              rowAspectRatio: "971 / 1024",
-              objectPosition: "center calc(50% + 10px)",
+              rowFit: "natural",
             },
             {
               src: "/work/kuwaits-cake-picnic/necklace.png",
