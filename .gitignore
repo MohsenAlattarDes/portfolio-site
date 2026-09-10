@@ -50,8 +50,17 @@ yarn-error.log*
 /public/work/anora/anora_comp_2.mp4
 /public/work/anora/anora_comp_3.mp4
 /public/work/anora/anora_comp_3-alpha.mp4
+/public/work/anora/anora_comp_3.apng
+/public/work/anora/anora_comp_3.webm
+/public/work/anora/anora_comp_3-alpha.mov
+/public/work/anora/anora_comp_3-poster.png
+/public/work/anora/anora_people_walking_posters.mov
+/public/work/anora/anora_people_walking_posters.mp4
 /public/work/anora/specimen-spreads-dark.jpg
 /public/work/anora/specimen-spreads-light.jpg
+/public/work/anora/specimen-spreads-transparent.png
+/public/work/anora/specimen-spreads-transparent-mobile.png
+/public/work/anora/scans/
 
 # typescript
 *.tsbuildinfo

@@ -16,9 +16,10 @@ export default function CaseStudyLoopVideo({
   style?: React.CSSProperties;
   playbackRate?: number;
 }) {
-  const { ref: inViewRef, inView } = useInView<HTMLDivElement>();
+  const { ref: inViewRef, inView } = useInView<HTMLDivElement>("400px 0px");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showPoster, setShowPoster] = useState(Boolean(item.poster));
+  const [allowLoad, setAllowLoad] = useState(false);
   const { src, videoSources } = useResponsiveMedia(item);
   const sources = videoSources ?? [{ src, type: "video/mp4" }];
   const sourceKey = sources.map((source) => source.src).join("|");
@@ -26,10 +27,14 @@ export default function CaseStudyLoopVideo({
   const rate = playbackRate ?? item.videoPlaybackRate ?? 1;
 
   useEffect(() => {
+    if (inView) setAllowLoad(true);
+  }, [inView]);
+
+  useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !allowLoad) return;
     video.load();
-  }, [sourceKey]);
+  }, [allowLoad, sourceKey]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -50,9 +55,11 @@ export default function CaseStudyLoopVideo({
 
     const onPlaying = () => setShowPoster(false);
 
-    if (!inView) {
-      video.pause();
-      if (item.poster) setShowPoster(true);
+    if (!inView || !allowLoad) {
+      if (!inView) {
+        video.pause();
+        if (item.poster) setShowPoster(true);
+      }
       return;
     }
 
@@ -68,7 +75,7 @@ export default function CaseStudyLoopVideo({
       video.removeEventListener("canplaythrough", play);
       video.removeEventListener("playing", onPlaying);
     };
-  }, [inView, item.poster, rate, sourceKey]);
+  }, [allowLoad, inView, item.poster, rate, sourceKey]);
 
   return (
     <div ref={inViewRef} className="absolute inset-0">
@@ -88,19 +95,21 @@ export default function CaseStudyLoopVideo({
         loop
         muted
         playsInline
-        preload="auto"
+        preload={allowLoad ? "metadata" : "none"}
         poster={item.poster}
         aria-label={item.alt}
         className={`${className}${showPoster ? " opacity-0" : " opacity-100"}`}
         style={style}
       >
-        {sources.map((source) => (
-          <source
-            key={source.src}
-            src={source.src}
-            type={source.type || "video/mp4"}
-          />
-        ))}
+        {allowLoad
+          ? sources.map((source) => (
+              <source
+                key={source.src}
+                src={source.src}
+                type={source.type || "video/mp4"}
+              />
+            ))
+          : null}
       </video>
     </div>
   );

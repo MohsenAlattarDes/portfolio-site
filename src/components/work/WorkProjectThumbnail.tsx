@@ -198,18 +198,20 @@ export default function WorkProjectThumbnail({
           loop
           muted
           playsInline
-          preload="metadata"
+          preload={playing ? "metadata" : "none"}
           poster={project.thumbnailPoster}
           aria-label={alt}
           className={`absolute inset-0 z-[1] h-full w-full ${fitClass}`}
         >
-          {sources.map((source) => (
-            <source
-              key={source.src}
-              src={source.src}
-              type={source.type || undefined}
-            />
-          ))}
+          {playing
+            ? sources.map((source) => (
+                <source
+                  key={source.src}
+                  src={source.src}
+                  type={source.type || undefined}
+                />
+              ))
+            : null}
         </video>
       </>
     );

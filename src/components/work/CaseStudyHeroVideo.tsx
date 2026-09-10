@@ -6,12 +6,17 @@ import { useInView } from "@/lib/useInView";
 import { useResponsiveMedia } from "@/lib/useResponsiveMedia";
 
 export default function CaseStudyHeroVideo({ hero }: { hero: ProjectMedia }) {
-  const { ref: inViewRef, inView } = useInView<HTMLDivElement>();
+  const { ref: inViewRef, inView } = useInView<HTMLDivElement>("400px 0px");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showPoster, setShowPoster] = useState(Boolean(hero.poster));
+  const [allowLoad, setAllowLoad] = useState(false);
   const { src, videoSources } = useResponsiveMedia(hero);
   const sources = videoSources ?? [{ src, type: "" }];
   const sourceKey = sources.map((source) => source.src).join("|");
+
+  useEffect(() => {
+    if (inView) setAllowLoad(true);
+  }, [inView]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -34,7 +39,9 @@ export default function CaseStudyHeroVideo({ hero }: { hero: ProjectMedia }) {
       return;
     }
 
-    video.preload = hero.poster ? "auto" : "metadata";
+    if (!allowLoad) return;
+
+    video.preload = "metadata";
     if (video.readyState === 0) {
       video.load();
     }
@@ -49,7 +56,7 @@ export default function CaseStudyHeroVideo({ hero }: { hero: ProjectMedia }) {
       video.removeEventListener("canplay", play);
       video.removeEventListener("playing", onPlaying);
     };
-  }, [hero.poster, inView, sourceKey]);
+  }, [allowLoad, hero.poster, inView, sourceKey]);
 
   const fitClass = hero.transparent
     ? "object-contain object-center"
@@ -72,18 +79,20 @@ export default function CaseStudyHeroVideo({ hero }: { hero: ProjectMedia }) {
         loop
         muted
         playsInline
-        preload="metadata"
+        preload={allowLoad ? "metadata" : "none"}
         poster={hero.poster}
         aria-label={hero.alt}
         className={`work-case-hero-media absolute inset-0 z-[1] h-full w-full ${fitClass}${showPoster ? " opacity-0" : " opacity-100"}${hero.transparent ? " work-case-hero-media--transparent" : ""}`}
       >
-        {sources.map((source) => (
-          <source
-            key={source.src}
-            src={source.src}
-            type={source.type || undefined}
-          />
-        ))}
+        {allowLoad
+          ? sources.map((source) => (
+              <source
+                key={source.src}
+                src={source.src}
+                type={source.type || undefined}
+              />
+            ))
+          : null}
       </video>
     </div>
   );

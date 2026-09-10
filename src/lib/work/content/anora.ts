@@ -3,24 +3,15 @@ import type { ProjectCaseStudy } from "@/lib/work/types";
 export const anoraCaseStudy: ProjectCaseStudy = {
   slug: "anora",
   hero: {
-    src: "/work/anora/anora_comp_3.apng",
+    src: "/work/anora/anora_comp_3.webp",
     alt: "Anora newspaper specimen composition animation",
     caption: "",
     aspectRatio: "3612 / 1850",
     bare: true,
     transparent: true,
     kind: "image",
-    poster: "/work/anora/anora_comp_3-poster.png",
-    mobileVideoSources: [
-      {
-        src: "/work/anora/anora_comp_3-alpha.mov",
-        type: "video/quicktime",
-      },
-      {
-        src: "/work/anora/anora_comp_3.webm",
-        type: "video/webm",
-      },
-    ],
+    poster: "/work/anora/anora_comp_3-poster.webp",
+    mobileSrc: "/work/anora/anora_comp_3-mobile.webp",
   },
   intro: {
     heading: "ABOUT THE PROJECT",
@@ -87,7 +78,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
           mediaRowClass: "work-case-media-row--match-height",
           media: [
             {
-              src: "/work/anora/process-fraktur-reference.png",
+              src: "/work/anora/process-fraktur-reference.webp",
               alt: "Fraktur Mon Amour reference book from HMCT archive",
               caption: "",
               aspectRatio: "767 / 1024",
@@ -96,7 +87,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
               enlarge: true,
             },
             {
-              src: "/work/anora/process-blackletter-sheets.png",
+              src: "/work/anora/process-blackletter-sheets.webp",
               alt: "Early blackletter typeface development sheets with red markup",
               caption: "",
               aspectRatio: "768 / 1024",
@@ -105,7 +96,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
               enlarge: true,
             },
             {
-              src: "/work/anora/process-digital-testing.png",
+              src: "/work/anora/process-digital-testing.webp",
               alt: "Early digital typeface testing on screen with sculptural reference book",
               caption: "",
               aspectRatio: "768 / 1024",
@@ -123,7 +114,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
               enlarge: true,
             },
             {
-              src: "/work/anora/process-calligraphy-sketches.png",
+              src: "/work/anora/process-calligraphy-sketches.webp",
               alt: "Hand-drawn blackletter calligraphy sketches in a process notebook",
               caption: "",
               aspectRatio: "1016 / 724",
@@ -147,12 +138,12 @@ export const anoraCaseStudy: ProjectCaseStudy = {
           ],
           media: [
             {
-              src: "/work/anora/specimen-spreads-transparent.png",
-              mobileSrc: "/work/anora/specimen-spreads-transparent-mobile.png",
+              src: "/work/anora/specimen-spreads-transparent.webp",
+              mobileSrc: "/work/anora/specimen-spreads-transparent-mobile.webp",
               alt: "Anora newspaper-format specimen book spreads",
               caption: "Newspaper-format specimen book spreads.",
               aspectRatio: "3840 / 3340",
-              intrinsicSize: { width: 3840, height: 3340 },
+              intrinsicSize: { width: 2000, height: 1740 },
               bare: true,
               transparent: true,
               spacingTop: "-20px",
@@ -165,7 +156,7 @@ export const anoraCaseStudy: ProjectCaseStudy = {
           mediaLayout: "hero",
           media: [
             {
-              src: "/work/anora/anora_people_walking_posters.mp4",
+              src: "/work/anora/anora_people_walking_posters-web.mp4",
               alt: "People walking past Anora poster wall installation",
               caption: "Poster wall installation.",
               aspectRatio: "3840 / 2160",
@@ -174,12 +165,8 @@ export const anoraCaseStudy: ProjectCaseStudy = {
               poster: "/work/anora/anora_people_walking_posters-poster.jpg",
               videoSources: [
                 {
-                  src: "/work/anora/anora_people_walking_posters.mp4",
+                  src: "/work/anora/anora_people_walking_posters-web.mp4",
                   type: "video/mp4",
-                },
-                {
-                  src: "/work/anora/anora_people_walking_posters.mov",
-                  type: "video/quicktime",
                 },
               ],
               mobileVideoSources: [
@@ -195,5 +182,5 @@ export const anoraCaseStudy: ProjectCaseStudy = {
     },
   ],
   footerNote:
-    "*Recognized by ECAL A Typographic Atlas.\n*Recognized by the Lithographix Gallery.\n*Recognized by the ArtCenter Gallery.*",
+    "*Recognized by ECAL A Typographic Atlas.*\n*Recognized by the Lithographix Gallery.*\n*Recognized by the ArtCenter Gallery.*",
 };
