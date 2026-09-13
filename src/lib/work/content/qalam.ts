@@ -176,7 +176,8 @@ export const qalamCaseStudy: ProjectCaseStudy = {
               },
               ". Categories lead into focused entries, related ideas, and a Play section built around noticing: recognition, comparison, observation.",
             ],
-            "Entries link out to related ideas, so exploring stays non-linear rather than a straight read, and the deeper research sits one layer down — there when you want it, out of the way when you don't.",
+            "Entries link out to related ideas, so exploring stays non-linear rather than a straight read, and the deeper research sits one layer down: there when you want it, out of the way when you don't.",
+            "The site was vibe-coded: built in conversation with AI, with me directing structure, interaction, and writing the way I would a collaborator. Generation is part of my practice: a way to move through making quickly while I keep the decisions that give the work a point of view.",
           ],
           media: [
             {
@@ -200,7 +201,8 @@ export const qalamCaseStudy: ProjectCaseStudy = {
         {
           paragraphs: [
             "Because the audience often learns faster from images than from dense text, the interface stays visual and quiet. Soft marks, a cream ground, and generous space set the tone before any reading begins, so the material feels approachable rather than academic.",
-            "Salem, Hala, and Simsim run through it as quiet guides, drawn in the spirit of vintage schoolbook illustrations. Each carries a different kind of attention: calm observation, curiosity, and a lighter sense of play. Their forms draw on Arabic visual identity, so the cast belongs to the subject rather than borrowing familiar Western illustration habits.",
+            "Salem, Hala, and Simsim run through it as quiet guides, in the spirit of vintage schoolbook illustrations. I generated the cast, then cropped, redrew, and directed each figure until the line and attitudes felt authored.",
+            "Each carries a different kind of attention: calm observation, curiosity, and a lighter sense of play. Their forms draw on Arabic visual identity, so the cast belongs to the subject rather than borrowing familiar Western illustration habits.",
           ],
           media: [
             {

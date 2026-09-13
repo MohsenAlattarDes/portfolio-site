@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import WorkCaseNextProject from "@/components/work/WorkCaseNextProject";
 import WorkProjectCaseStudy from "@/components/work/WorkProjectCaseStudy";
 import WorkTitleText from "@/components/WorkTitleText";
@@ -12,6 +13,12 @@ import {
   getWorkProject,
   WORK_PROJECTS,
 } from "@/lib/work/projects";
+import {
+  caseStudyDescription,
+  creativeWorkJsonLd,
+  LEGAL_NAME,
+  SITE_NAME,
+} from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -24,9 +31,33 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = getWorkProject(slug);
-  if (!project) return { title: "Project — Mohsen Alattar" };
+  if (!project) return { title: "Project" };
+
+  const title = project.lines.join(" ");
+  const study = getProjectCaseStudy(slug);
+  const description = study
+    ? caseStudyDescription(study)
+    : `${title}, ${project.category} by ${SITE_NAME} (${LEGAL_NAME}).`;
+  const path = `/work/${slug}`;
+  const shareTitle = `${title} | ${SITE_NAME} (${LEGAL_NAME})`;
+
   return {
-    title: `${project.lines.join(" ")} — Mohsen Alattar`,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: shareTitle,
+      description,
+      url: path,
+      type: "article",
+      siteName: SITE_NAME,
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: shareTitle,
+      description,
+    },
   };
 }
 
@@ -41,6 +72,7 @@ export default async function WorkProjectPage({ params }: Props) {
   if (caseStudy) {
     return (
       <div className="work-project-page flex w-full flex-1 flex-col">
+        <JsonLd data={creativeWorkJsonLd(project, caseStudy)} />
         <section className="work-case-wrap flex-1">
           <WorkProjectCaseStudy project={project} content={caseStudy} />
           {nextProject ? <WorkCaseNextProject project={nextProject} /> : null}
@@ -54,6 +86,7 @@ export default async function WorkProjectPage({ params }: Props) {
 
   return (
     <div className="flex w-full flex-1 flex-col">
+      <JsonLd data={creativeWorkJsonLd(project)} />
       <section className="flex-1 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 pt-10 sm:pt-16 md:pt-20 lg:pt-24 pb-10 md:pb-16">
         <Link
           href="/work"

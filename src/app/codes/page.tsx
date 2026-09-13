@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import CodesExperiments from "@/components/CodesExperiments";
+import { CODES_DESCRIPTION, routeMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = routeMetadata({
+  title: "Codes",
+  description: CODES_DESCRIPTION,
+  path: "/codes",
+});
 
 export default function CodesPage() {
   return (

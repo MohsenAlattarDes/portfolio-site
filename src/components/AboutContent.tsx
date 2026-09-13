@@ -23,7 +23,7 @@ const headingStyle = {
 } as const;
 
 const BIO = [
-  "My story begins with Arabic type. Growing up in Kuwait, it surrounded me, not just as written words, but as symbols of culture and identity. Its rhythm and history captivates me, and I imagine how it will continue to transform in the years ahead.",
+  "I am Abdulmuhsin Alattar, and I go by Mohsen. My story begins with Arabic type. Growing up in Kuwait, it surrounded me, not just as written words, but as symbols of culture and identity. Its rhythm and history captivates me, and I imagine how it will continue to transform in the years ahead.",
   "Design, to me, is not about surface beauty. It is about uncovering meaning, tracing connections, and shaping ideas that resonate. I am guided by curiosity and the pursuit of fascinating design. These are the forces that keep me questioning, learning, and creating with intention.",
 ];
 

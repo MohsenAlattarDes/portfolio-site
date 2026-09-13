@@ -1,13 +1,21 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import AnimatedTitle from "@/components/AnimatedTitle";
 import OceanWave from "@/components/OceanWave";
 import MobileFloatWords from "@/components/MobileFloatWords";
 import HomeScrollLock from "@/components/HomeScrollLock";
+import { INDEXABLE_HOME_COPY, SITE_DESCRIPTION } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (
     <div className="home-page relative flex flex-col flex-1 min-h-0 w-full">
+      <p className="sr-only">{INDEXABLE_HOME_COPY}</p>
       <HomeScrollLock />
       <MobileFloatWords />
 
